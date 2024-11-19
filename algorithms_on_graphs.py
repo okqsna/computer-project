@@ -1,3 +1,5 @@
+"""Computer project from discrete mathematics"""
+
 from copy import deepcopy
 
 
