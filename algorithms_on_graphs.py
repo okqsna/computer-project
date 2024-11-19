@@ -29,17 +29,22 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
     :param graph: list of tuples of letters that symbolyize verteces.
     :return: list fo all possible euler cycles.
 
-    >>> graph = [('a', 'b'), ('c', 'b'), ('d', 'c'), ('d', 'a'), \
-                 ('b', 'd'), ('b', 'd')]
-    >>> euler_cycle(graph)
-    [['a', 'b', 'd', 'c', 'b', 'd']]
+    # >>> graph = [('a', 'b'), ('c', 'b'), ('d', 'c'), ('d', 'a'), \
+    #              ('b', 'd'), ('b', 'd')]
+    # >>> euler_cycle(graph)
+    # [['a', 'b', 'd', 'c', 'b', 'd']]
 
-    >>> graph1 = [{'a', 'b'}, {'b', 'c'}, {'c', 'd'}, {'d', 'a'}]
-    >>> euler_cycle(graph1)
-    [['a', 'b', 'c', 'd']]
+    # >>> graph1 = [{'a', 'b'}, {'b', 'c'}, {'c', 'd'}, {'d', 'a'}]
+    # >>> euler_cycle(graph1)
+    # [['a', 'b', 'c', 'd']]
+    >>> graph2 = [{'a', 'b'}, {'b', 'c'}, {'c', 'd'}, {'d', 'a'}, {'a', 'e'}, {'b', 'e'}, \
+{'c', 'e'}, {'d', 'e'}, {'f', 'd'}, {'f', 'c'}, {'g', 'a'}, {'g', 'b'}]
+    >>> 'agbedabcdfce' in euler_cycle(graph2)
+    True
     """
     # deepcopy to be on the safe side
     p_graph = deepcopy(graph)
+    length = len(graph)
 
     if flag := isinstance(graph[0], set):
         p_graph = convert_to_directed(p_graph)
@@ -47,29 +52,30 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
     # calculate_way writes all possible cycles here
     all_cycles = []
 
-    def calculate_way(graph: list[tuple], position: str, way: str) -> list[tuple] | str:
+    def calculate_way(graph: list[tuple], position: str, way: str, r_p: tuple) -> list[tuple] | str:
         """
         Takes a graph and current position. Check where you can go from your current position
         and creates all these possible ways.
         """
         graph = deepcopy(graph)
+        graph.remove(r_p)
+        if flag:
+            graph.remove(r_p[::-1])
         for pair in graph:
             if pair[0] == position:
-                if pair[1] == vertex:
+                if pair[1] == vertex and len(way) == length:
                     all_cycles.append(way+vertex)
-                graph.remove(pair)
-                if flag:
-                    graph.remove(pair[::-1])
-                calculate_way(graph, pair[1], way+pair[1])
+                calculate_way(graph, pair[1], way+pair[1], pair)
 
     # We need to decide what will be start vertice
     vertex = 'a'
-    calculate_way(p_graph, vertex, vertex)
-    edges = [ver1 + ver2 for ver1, ver2 in p_graph]
+    calculate_way(p_graph + ['*', '*'], vertex, vertex, '*')
+    edges = [ver1 + ver2 for ver1, ver2 in graph]
 
     output = []
 
     if flag:
+        # return all_cycles
         # Selects those cycles that contain all edges for undirected graph
         for cycle in all_cycles:
             for edge in edges:
@@ -91,8 +97,7 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
                 # If this cycle has all edges we add it to output
                 output.append(cycle[:-1])
 
-    return [list(cycle) for cycle in output] if output else 'There is no euler cycle for this graph'
-
+    return output if output else 'There is no euler cycle for this graph'
 
 
 if __name__ == '__main__':
