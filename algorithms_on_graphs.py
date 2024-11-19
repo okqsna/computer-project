@@ -6,11 +6,12 @@ def convert_to_directed(graph: list[set]) -> list[tuple]:
     Converts undirected graphs into directed.
 
     >>> graph = [{'a', 'b'}, {'b', 'c'}, {'c', 'a'}]
-    >>> set(convert_to_directed(graph)) == \
-{('a', 'b'), ('b', 'a'), ('b', 'c'), ('c', 'b'), ('c', 'a'), ('a', 'c')}
+    >>> sorted(convert_to_directed(graph)) == \
+sorted([('a', 'b'), ('b', 'a'), ('b', 'c'), ('c', 'b'), ('c', 'a'), ('a', 'c')])
     True
-    >>> set(convert_to_directed([{'a', 'b'}, {'b', 'c'}, {'c', 'd'}, {'d', 'a'}])) == \
-set([('b', 'a'), ('a', 'b'), ('b', 'c'), ('c', 'b'), ('d', 'c'), ('c', 'd'), ('d', 'a'), ('a','d')])
+    >>> sorted(convert_to_directed([{'a', 'b'}, {'b', 'c'}, {'c', 'd'}, {'d', 'a'}])) == \
+sorted([('b', 'a'), ('a', 'b'), ('b', 'c'), ('c', 'b'), ('d', 'c'), ('c', 'd'), \
+('d', 'a'), ('a','d')])
     True
     """
     output = []
