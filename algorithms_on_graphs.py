@@ -21,21 +21,21 @@ set([('b', 'a'), ('a', 'b'), ('b', 'c'), ('c', 'b'), ('d', 'c'), ('c', 'd'), ('d
     return output
 
 
-def euler_cycle(graph: list[tuple | set]) -> list[tuple | set]:
+def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
     """
     Check whether 
 
     :param graph: list of tuples of letters that symbolyize verteces.
     :return: list fo all possible euler cycles.
 
-    # >>> graph = [('a', 'b'), ('c', 'b'), ('d', 'c'), ('d', 'a'), \
-    #              ('b', 'd'), ('b', 'd')]
-    # >>> euler_cycle(graph)
-    # ['abdcbd']
+    >>> graph = [('a', 'b'), ('c', 'b'), ('d', 'c'), ('d', 'a'), \
+                 ('b', 'd'), ('b', 'd')]
+    >>> euler_cycle(graph)
+    [['a', 'b', 'd', 'c', 'b', 'd']]
 
     >>> graph1 = [{'a', 'b'}, {'b', 'c'}, {'c', 'd'}, {'d', 'a'}]
     >>> euler_cycle(graph1)
-    ['abcd']
+    [['a', 'b', 'c', 'd']]
     """
     # deepcopy to be on the safe side
     p_graph = deepcopy(graph)
@@ -90,7 +90,7 @@ def euler_cycle(graph: list[tuple | set]) -> list[tuple | set]:
                 # If this cycle has all edges we add it to output
                 output.append(cycle[:-1])
 
-    return output if output else 'There is no euler cycle for this graph'
+    return [list(cycle) for cycle in output] if output else 'There is no euler cycle for this graph'
 
 
 
