@@ -23,6 +23,8 @@ set([('b', 'a'), ('a', 'b'), ('b', 'c'), ('c', 'b'), ('d', 'c'), ('c', 'd'), ('d
 
 def euler_cycle(graph: list[tuple | set]) -> list[tuple | set]:
     """
+    Check whether 
+
     :param graph: list of tuples of letters that symbolyize verteces.
     :return: list fo all possible euler cycles.
 
@@ -66,23 +68,27 @@ def euler_cycle(graph: list[tuple | set]) -> list[tuple | set]:
 
     output = []
 
-
     if flag:
-        for way in all_cycles:
+        # Selects those cycles that contain all edges for undirected graph
+        for cycle in all_cycles:
             for edge in edges:
-                if edge not in way and edge[::-1] not in way:
+                # Checks whether this cycle contains this edge
+                if edge not in cycle and edge[::-1] not in cycle:
                     break
             else:
-                output.append(way[:-1])
+                # If this cycle has all edges we add it to output
+                output.append(cycle[:-1])
 
-    # Selects those cycles that contain all edges
     else:
-        for way in all_cycles:
+        # Selects those cycles that contain all edges for directed graph
+        for cycle in all_cycles:
             for edge in edges:
-                if edge not in way:
+                # Checks whether this cycle contains this edge
+                if edge not in cycle:
                     break
             else:
-                output.append(way[:-1])
+                # If this cycle has all edges we add it to output
+                output.append(cycle[:-1])
 
     return output if output else 'There is no euler cycle for this graph'
 
