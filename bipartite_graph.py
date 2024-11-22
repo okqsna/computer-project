@@ -1,5 +1,5 @@
 """
-Checks if graph is bipartite
+Module checks whether given graph is bipartite.
 """
 
 def to_oriented(graph: list[tuple]) -> list[tuple]:
