@@ -31,14 +31,14 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
     :param graph: list of tuples of letters that symbolyize verteces.
     :return: list fo all possible euler cycles.
 
-    # >>> graph = [('a', 'b'), ('c', 'b'), ('d', 'c'), ('d', 'a'), \
-    #              ('b', 'd'), ('b', 'd')]
-    # >>> euler_cycle(graph)
-    # [['a', 'b', 'd', 'c', 'b', 'd']]
+    >>> graph = [('a', 'b'), ('c', 'b'), ('d', 'c'), ('d', 'a'), \
+                 ('b', 'd'), ('b', 'd')]
+    >>> euler_cycle(graph)
+    [['a', 'b', 'd', 'c', 'b', 'd']]
 
-    # >>> graph1 = [{'a', 'b'}, {'b', 'c'}, {'c', 'd'}, {'d', 'a'}]
-    # >>> euler_cycle(graph1)
-    # [['a', 'b', 'c', 'd']]
+    >>> graph1 = [{'a', 'b'}, {'b', 'c'}, {'c', 'd'}, {'d', 'a'}]
+    >>> euler_cycle(graph1)
+    [['a', 'b', 'c', 'd']]
     >>> graph2 = [{'a', 'b'}, {'b', 'c'}, {'c', 'd'}, {'d', 'a'}, {'a', 'e'}, {'b', 'e'}, \
 {'c', 'e'}, {'d', 'e'}, {'f', 'd'}, {'f', 'c'}, {'g', 'a'}, {'g', 'b'}]
     >>> 'agbedabcdfce' in euler_cycle(graph2)
