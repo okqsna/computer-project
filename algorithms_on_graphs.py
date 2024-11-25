@@ -34,11 +34,11 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
     >>> graph = [('a', 'b'), ('c', 'b'), ('d', 'c'), ('d', 'a'), \
                  ('b', 'd'), ('b', 'd')]
     >>> euler_cycle(graph)
-    [['a', 'b', 'd', 'c', 'b', 'd']]
+    ['abdcbd']
 
     >>> graph1 = [{'a', 'b'}, {'b', 'c'}, {'c', 'd'}, {'d', 'a'}]
     >>> euler_cycle(graph1)
-    [['a', 'b', 'c', 'd']]
+    ['abcd', 'adcb']
     >>> graph2 = [{'a', 'b'}, {'b', 'c'}, {'c', 'd'}, {'d', 'a'}, {'a', 'e'}, {'b', 'e'}, \
 {'c', 'e'}, {'d', 'e'}, {'f', 'd'}, {'f', 'c'}, {'g', 'a'}, {'g', 'b'}]
     >>> 'agbedabcdfce' in euler_cycle(graph2)
@@ -99,7 +99,7 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
                 # If this cycle has all edges we add it to output
                 output.append(cycle[:-1])
 
-    return output if output else 'There is no euler cycle for this graph'
+    return sorted(set(output)) if output else 'There is no euler cycle for this graph'
 
 
 def check_for_ham(graph: list[tuple]) -> list | str:
