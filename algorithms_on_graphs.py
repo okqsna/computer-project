@@ -324,12 +324,9 @@ def if_graphs_are_isomorphic(graph_1: list[tuple], graph_2: list[tuple]) -> bool
     """
     Checks if two graphs are isomorphic
 
-    Args:
-        graph_1 (list[tuple]): A list of edges for the first graph.
-        graph_2 (list[tuple]): A list of edges for the second graph.
-
-    Returns:
-        bool: True if the graphs are isomorphic, False if not.
+    :param graph_1: a list of edges for the first graph.
+    :param graph_2: a list of edges for the second graph.
+    :return: bool, True if the graphs are isomorphic, False if not.
 
     >>> if_graphs_are_isomorphic([(1, 2), (2, 1), (3, 4)], [(2, 1), (1, 2), (4, 3)])
     True
@@ -341,22 +338,17 @@ def if_graphs_are_isomorphic(graph_1: list[tuple], graph_2: list[tuple]) -> bool
         """
         Checks if graph is directed
     
-        Args:
-            graph (list[tuple]): A list of edges, where each edge is 
-            a tuple (start, end) representing a directed edge from 'start' to 'end'.
-    
-        Returns:
-            bool: True if the graph is directed, False if it is undirected.
+        :param graph: a list of edges, where each edge is a tuple (start, end) representing an undirected edge between 'start' and 'end'.
+        :return: bool, True if the graph is directed, False if it is undirected.
     
         >>> if_graph_is_directed([(1, 2), (2, 3), (3, 1), (4, 5)])
         True
         >>> if_graph_is_directed([(1, 2), (2, 3), (3, 1), (1, 3)])
         False
         """
-        for edges in graph:
-            for edge in edges:
-                if (edge[1], edge[0]) in graph:
-                    return False
+        for edge in graph:
+            if (edge[1], edge[0]) in graph:
+                return False
         return True
 
 
@@ -364,33 +356,25 @@ def if_graphs_are_isomorphic(graph_1: list[tuple], graph_2: list[tuple]) -> bool
         """
         Checks if graph is undirected
     
-        Args:
-            graph (list[tuple]): A list of edges, where each edge is a tuple (start, end)
-            representing an undirected edge between 'start' and 'end'.
-    
-        Returns:
-            bool: True if the graph is undirected, False if it is directed.
+        :param graph: a list of edges, where each edge is a tuple (start, end) representing an undirected edge between 'start' and 'end'.
+        :return: bool, True if the graph is undirected, False if it is directed.
     
         >>> if_graph_is_directed([(1, 2), (2, 3), (3, 1), (4, 5)])
         False
         >>> if_graph_is_directed([(1, 2), (2, 3), (3, 1), (1, 3)])
         True
         """
-        for edges in graph:
-            for edge in edges:
-                if (edge[1], edge[0]) in graph:
-                    return True
+        for edge in graph:
+            if (edge[1], edge[0]) in graph:
+                return True
         return False
 
     def directed_isomorphism(graph_1: list[tuple], graph_2: list[tuple]) -> bool:
         """Checks if directed graphs are isomorphic
     
-        Args:
-            graph_1 (list[tuple]): A list of directed edges for the first graph.
-            graph_2 (list[tuple]):A list of directed edges for the second graph.
-    
-        Returns:
-            bool: True if the graphs are isomorphic, False if not.
+        :param graph_1: a list of directed edges for the first graph.
+        :param graph_2: a list of directed edges for the second graph.
+        :return: bool, True if the graphs are isomorphic, False if not.
     
          >>> directed_isomorphism([(1, 2), (2, 3), (3, 1)], [(3, 2), (2, 1), (1, 3)])
         True
@@ -432,12 +416,9 @@ def if_graphs_are_isomorphic(graph_1: list[tuple], graph_2: list[tuple]) -> bool
         """
         Checks if undirected graphs are isomorphic
     
-        Args:
-            graph_1 (list[tuple]): A list of undirected edges for the first graph.
-            graph_2 (list[tuple]): A list of undirected edges for the second graph.
-    
-        Returns:
-            bool: True if the graphs are isomorphic, False if not.
+        :param graph_1: a list of undirected edges for the first graph.
+        :param graph_2: a list of undirected edges for the second graph.
+        :return: bool, True if the graphs are isomorphic, False if not.
     
         >>> undirected_isomorphism([{1, 2}, {2, 3}, {3, 4}], [{4, 3}, {2, 1}, {3, 2}])
         True
