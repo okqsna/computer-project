@@ -1,7 +1,37 @@
 """Computer project from discrete mathematics"""
 
-from copy import deepcopy
 from itertools import permutations
+from copy import deepcopy
+
+def readfile(file_name: str) -> list[tuple]:
+    """
+    The function reads the file .dot and makes 
+    the list of tuples of neighbour vertices.
+
+    :param file_name: str, the name of the file.
+    :return: list[tuple], the list for graph.
+    """
+    res = []
+    with open(file_name, 'r', encoding='utf-8') as file:
+        for line in file:
+            if "-" in line:
+                vertices = line.strip().split(" -> ")
+                i = 0
+                while i != len(vertices) - 1:
+                    res.append((int(vertices[i]), int(vertices[i + 1])))
+                    i += 1
+    return res
+
+def to_undirected(oriented: list[tuple]) -> list[set]:
+    """
+    The function makes from the list of tuples a list of sets.
+
+    :param oriented: list[tuple], the list for oriented graph.
+    :return: list[list], the list for undirected graph.
+    >>> to_undirected([(1, 2), (2, 5), (2, 3), (3, 4), (1, 3), (4, 5), (1, 5)])
+    [{1, 2}, {2, 5}, {2, 3}, {3, 4}, {1, 3}, {4, 5}, {1, 5}]
+    """
+    return [set(ver) for ver in oriented]
 
 def convert_to_directed(graph: list[set]) -> list[tuple]:
     """
@@ -228,6 +258,109 @@ def check_for_ham(graph: list[tuple]) -> list | str:
 
     return "There is no Hamiltonian cycle for this graph"
 
+def to_matrix(graph_list: list[tuple]) -> list[list]:
+    """
+    The function makes the matrix for the graph.
+
+    :param graph_list: list[tuple], the graph.
+    :return: list[list], matrix.
+    >>> to_matrix([(1, 2), (2, 3), (3, 4), (1, 5), (5, 3)])
+    [[0, 0, 0, 0, 0], [1, 0, 0, 0, 0], [0, 1, 0, 0, 1], [0, 0, 1, 0, 0], [1, 0, 0, 0, 0]]
+    """
+    leng = max(max(i[0], i[1]) for i in graph_list)
+    return [[1*((i+1, j+1) in graph_list) for i in range(leng)] for j in range(leng)]
+
+def to_symetric(matrix: list[list]) -> list[list]:
+    """
+    The function returns the symetric relation.
+
+    :param matrix: list[list], the graph's matrix.
+    :return: list[list], the symetric relation.
+    >>> to_symetric([[0, 0, 0, 0, 0], [1, 0, 0, 0, 0], [0, 1, 0, 0, 1], \
+[0, 0, 1, 0, 0], [1, 0, 0, 0, 0]])
+    [[0, 1, 0, 0, 1], [1, 0, 1, 0, 0], [0, 1, 0, 1, 1], [0, 0, 1, 0, 0], [1, 0, 1, 0, 0]]
+    """
+    leng = len(matrix)
+    return [[matrix[i][j] | matrix[j][i] for i in range(leng)] for j in range(leng)]
+
+def approp(cur: int, graph: list[list[int]], colours: list[int], colour: int) -> bool:
+    """
+    The function checks wheather we can assign colour to the vertice.
+
+    :param cur: int, the number of curren vertice.
+    :param graph: list[list[int]], the matrix of the graph.
+    :param colours: list[int], the list with colours' numbers assigned to each vetice.
+    :param colour: int, the colour's number wanted to be assigned.
+    :return: bool, if the colour is appropriate - True, else - False.
+    """
+    for i in range(cur):
+        if graph[cur][i] and colour == colours[i]:
+            return False
+    return True
+
+def colouring(graph: list[list[int]], s: int, colours: list[int], cur: int) -> bool | list[int]:
+    """
+    The function is "colouring" the graph.
+
+    :param graph: list[list[int]], the matrix of the graph.
+    :param s: int, the number of vetices.
+    :param colours: list[int], the list with colours' numbers assigned to each vetice.
+    :param cur: int, the number of curren vertice.
+    :return: bool(False if we can't colour the graph) or the chenged list colours.
+    """
+    if cur == s:
+        return True
+
+    for i in range(1, s+1):
+        if approp(cur, graph, colours, i):
+            colours[cur] = i
+
+            if colouring(graph, s, colours, cur+1):
+                return colours
+
+            colours[cur] = 0
+    return False
+
+def get_colour_seq(file_name: str, colour_list: list) -> str:
+    """
+    The function returns the result of colouring and the text if not possible.
+
+    :param file_name: str, the name of .dot file.
+    :return: str, the chosen numbers (only 3).
+    :return: str, the colour sequence in string with whight fpaces.
+    """
+    matrix = to_symetric(to_matrix(readfile(file_name)))
+    SIZE = len(matrix)
+    chosen_colours = [0]*SIZE
+    if colouring(matrix, SIZE, chosen_colours, 0):
+        chosen_colours = colouring(matrix, SIZE, chosen_colours, 0)
+        result = " ".join(map(lambda x: colour_list[x-1], chosen_colours))
+    else:
+        result = "The coloring is imposible."
+    return result
+
+def write_colour(file_in: str, file_out: str, colours: list[str]) -> None:
+    """
+    The function writes the coloured graph into the file.
+
+    :param file_in: str, the name of input .dot file.
+    :param file_out: str, the name of output .dot file.
+    :param colours: str, the chosen numbers (only 3).
+    :return: None
+    """
+    with open(file_out, "w+", encoding='utf-8') as file, \
+    open(file_in, 'r', encoding='utf-8') as f:
+        sequence = get_colour_seq(file_in, colours)
+        num = 0
+        for line in f.readlines()[:-1]:
+            file.write(line)
+            for i in line:
+                if i.isnumeric():
+                    num = max(num, int(i))
+        for i in range(num):
+            file.write(f'\t{i+1} [shape = circle style = filled color="{sequence.split()[i]}"]\n')
+        file.write("}")
+=======
 def bipartite_graph_check(graph: list[tuple])-> bool:
     """
     Function checks if a given graph is bipartite.
@@ -494,7 +627,8 @@ def write_results(graph_one: list[tuple], graph_two: list[tuple], file_path: str
         file.write(f'Graph is bipartite: {bipartite_res}')
         file.write(f'Graph is isomporphic: {isomorphic_res}')
 
-
 if __name__ == "__main__":
     import doctest
     print(doctest.testmod())
+
+# write_colour("graph.dot", "colored.dot", ["red", "green", "blue"])
