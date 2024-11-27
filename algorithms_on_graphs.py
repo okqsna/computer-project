@@ -1,5 +1,6 @@
 """Computer project from discrete mathematics"""
 
+from itertools import permutations
 from copy import deepcopy
 
 def readfile(file_name: str) -> list[tuple]:
@@ -58,16 +59,16 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
     Check whether 
 
     :param graph: list of tuples of letters that symbolyize verteces.
-    :return: list fo all possible euler cycles.
+    :return: list of all possible euler cycles.
 
-    # >>> graph = [('a', 'b'), ('c', 'b'), ('d', 'c'), ('d', 'a'), \
-    #              ('b', 'd'), ('b', 'd')]
-    # >>> euler_cycle(graph)
-    # [['a', 'b', 'd', 'c', 'b', 'd']]
+    >>> graph = [('a', 'b'), ('c', 'b'), ('d', 'c'), ('d', 'a'), \
+                 ('b', 'd'), ('b', 'd')]
+    >>> euler_cycle(graph)
+    ['abdcbd']
 
-    # >>> graph1 = [{'a', 'b'}, {'b', 'c'}, {'c', 'd'}, {'d', 'a'}]
-    # >>> euler_cycle(graph1)
-    # [['a', 'b', 'c', 'd']]
+    >>> graph1 = [{'a', 'b'}, {'b', 'c'}, {'c', 'd'}, {'d', 'a'}]
+    >>> euler_cycle(graph1)
+    ['abcd', 'adcb']
     >>> graph2 = [{'a', 'b'}, {'b', 'c'}, {'c', 'd'}, {'d', 'a'}, {'a', 'e'}, {'b', 'e'}, \
 {'c', 'e'}, {'d', 'e'}, {'f', 'd'}, {'f', 'c'}, {'g', 'a'}, {'g', 'b'}]
     >>> 'agbedabcdfce' in euler_cycle(graph2)
@@ -128,7 +129,7 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
                 # If this cycle has all edges we add it to output
                 output.append(cycle[:-1])
 
-    return output if output else 'There is no euler cycle for this graph'
+    return sorted(set(output)) if output else 'There is no euler cycle for this graph'
 
 
 def check_for_ham(graph: list[tuple]) -> list | str:
@@ -139,7 +140,7 @@ def check_for_ham(graph: list[tuple]) -> list | str:
     is the vertice, and the second is the connection
 
     :return: returns either a list of the vertices of the hamiltonian
-    cycle, or says that it does nto exist
+    cycle, or says that it doesn't exist
 
     # UNORIENTED
     >>> g = [{1, 2}, {2, 3}, {3, 1}]
@@ -359,6 +360,272 @@ def write_colour(file_in: str, file_out: str, colours: list[str]) -> None:
         for i in range(num):
             file.write(f'\t{i+1} [shape = circle style = filled color="{sequence.split()[i]}"]\n')
         file.write("}")
+=======
+def bipartite_graph_check(graph: list[tuple])-> bool:
+    """
+    Function checks if a given graph is bipartite.
+
+    A graph is bipartite if its vertices can be divided into two disjoint sets 
+    such that no two vertices within the same set are adjacent.
+    
+    Using a breadth-first search (BFS) approach 
+    to check whether the graph satisfies this property
+    by coloring vertices into 2 colors.
+
+    :param graph: list[tuple], given graph
+    :return: bool, function returns True if graph is bipartite, 
+    returns False when it is not.
+
+    >>> graph = [(1, 4), (1, 5), (2, 5), (2, 6), (3, 6), (3, 4)] 
+    >>> bipartite_graph_check(graph)
+    True
+    >>> graph = [(1, 2), (2, 3), (3, 1), (3, 4), (4, 5)]
+    >>> bipartite_graph_check(graph)
+    False
+    """
+    def to_oriented(graph: list[tuple]) -> list[tuple]:
+        """
+        Function transforms not oriented graph into oriented.
+
+        :param graph: list[tuple], given graph
+        :return: list[tuple], updated graph
+    
+        >>> graph = [(1, 2), (1, 3), (2, 4), (3, 4), (4, 5)]
+        >>> to_oriented(graph)
+        [(1, 2), (1, 3), (2, 4), (3, 4), (4, 5), (2, 1), (3, 1), (4, 2), (4, 3), (5, 4)]
+        """
+        graph_new = graph
+        for v1, v2 in graph:
+            if (v2, v1) not in graph:
+                graph_new.append((v2, v1))
+        return graph_new
+
+    def get_neighbouring_values(graph: list[tuple]) -> dict:
+        """
+        Function looks for every neighbouring vertix 
+        and returns it as a dictionary.
+
+        :param graph: given graph
+        :return: dict, key is a vertex, value is all of the neighbouring vertices
+
+        >>> graph = [(1, 2), (1, 3), (2, 4), (3, 4), (4, 5), (2, 1), (3, 1), (4, 2), (4, 3), (5, 4)]
+        >>> get_neighbouring_values(graph)
+        {1: {2, 3}, 2: {1, 4}, 3: {1, 4}, 4: {2, 3, 5}, 5: {4}}
+        """
+        neighbour_vertex = {}
+        for v1, v2 in graph:
+            if v1 not in neighbour_vertex:
+                neighbour_vertex.setdefault(v1, set())
+            if v2 not in neighbour_vertex:
+                neighbour_vertex.setdefault(v2, set())
+
+            neighbour_vertex[v1].add(v2)
+            neighbour_vertex[v2].add(v1)
+        return neighbour_vertex
+
+    # getting values from additional functions
+    graph_new = to_oriented(graph)
+    neighbour_vertix = get_neighbouring_values(graph_new)
+
+    # choosing a vertex to start with, setting its color
+    start_vertix = list(neighbour_vertix)[0]
+    color_vertices = {start_vertix: "green"}
+
+    visited_vertices = set()
+    not_visited_vertices = [start_vertix]
+
+    while not_visited_vertices:
+        # setting vertix to work with
+        current_vertix = not_visited_vertices[0]
+        if current_vertix not in visited_vertices:
+            # visiting vertix
+            visited_vertices.add(current_vertix)
+            # setting color for neighbours
+            color_vertix = "black" if color_vertices[current_vertix] == "green" else "green"
+            for neighbour in neighbour_vertix[current_vertix]:
+                if neighbour not in visited_vertices:
+                    not_visited_vertices.append(neighbour)
+                    color_vertices[neighbour] = color_vertix
+                elif color_vertices[current_vertix] == color_vertices[neighbour]:
+                    return False
+        not_visited_vertices.remove(current_vertix)
+
+    return True
+
+
+def if_graphs_are_isomorphic(graph_1: list[tuple], graph_2: list[tuple]) -> bool:
+    """
+    Checks if two graphs are isomorphic
+
+    :param graph_1: a list of edges for the first graph.
+    :param graph_2: a list of edges for the second graph.
+    :return: bool, True if the graphs are isomorphic, False if not.
+
+    >>> if_graphs_are_isomorphic([(1, 2), (2, 1), (3, 4)], [(2, 1), (1, 2), (4, 3)])
+    True
+    >>> if_graphs_are_isomorphic([(1, 2), (2, 3)], [(3, 2), (2, 1)])
+    False
+    """
+
+    def if_graph_is_directed(graph: list[tuple]) -> bool:
+        """
+        Checks if graph is directed
+    
+        :param graph: a list of edges, where each edge is a tuple (start, end) representing an undirected edge between 'start' and 'end'.
+        :return: bool, True if the graph is directed, False if it is undirected.
+    
+        >>> if_graph_is_directed([(1, 2), (2, 3), (3, 1), (4, 5)])
+        True
+        >>> if_graph_is_directed([(1, 2), (2, 3), (3, 1), (1, 3)])
+        False
+        """
+        for edge in graph:
+            if (edge[1], edge[0]) in graph:
+                return False
+        return True
+
+
+    def if_graph_is_undirected(graph: list[tuple]) -> bool:
+        """
+        Checks if graph is undirected
+    
+        :param graph: a list of edges, where each edge is a tuple (start, end) representing an undirected edge between 'start' and 'end'.
+        :return: bool, True if the graph is undirected, False if it is directed.
+    
+        >>> if_graph_is_directed([(1, 2), (2, 3), (3, 1), (4, 5)])
+        False
+        >>> if_graph_is_directed([(1, 2), (2, 3), (3, 1), (1, 3)])
+        True
+        """
+        for edge in graph:
+            if (edge[1], edge[0]) in graph:
+                return True
+        return False
+
+    def directed_isomorphism(graph_1: list[tuple], graph_2: list[tuple]) -> bool:
+        """Checks if directed graphs are isomorphic
+    
+        :param graph_1: a list of directed edges for the first graph.
+        :param graph_2: a list of directed edges for the second graph.
+        :return: bool, True if the graphs are isomorphic, False if not.
+    
+         >>> directed_isomorphism([(1, 2), (2, 3), (3, 1)], [(3, 2), (2, 1), (1, 3)])
+        True
+        >>> directed_isomorphism([(1, 2), (2, 3), (3, 4)], [(4, 3), (3, 2), (2, 1)])
+        False
+        """
+        if len(graph_1) != len(graph_2):
+            return False
+
+        vertices_1 = set()
+        vertices_2 = set()
+
+        for start, end in graph_1:
+            vertices_1.add(start)
+            vertices_1.add(end)
+        for start, end in graph_2:
+            vertices_2.add(start)
+            vertices_2.add(end)
+
+        if len(vertices_1) != len(vertices_2):
+            return False
+
+        for perm in permutations(vertices_2):
+            vertex_match = {}
+            for u, v in enumerate(vertices_1):
+                vertex_match[v] = perm[u]
+
+            new_graph = []
+            for start, end in graph_1:
+                new_graph.append((vertex_match[start], vertex_match[end]))
+
+            if sorted(new_graph) == sorted(graph_2):
+                return True
+
+        return False
+
+
+    def undirected_isomorphism(graph_1: list[set], graph_2: list[set]) -> bool:
+        """
+        Checks if undirected graphs are isomorphic
+    
+        :param graph_1: a list of undirected edges for the first graph.
+        :param graph_2: a list of undirected edges for the second graph.
+        :return: bool, True if the graphs are isomorphic, False if not.
+    
+        >>> undirected_isomorphism([{1, 2}, {2, 3}, {3, 4}], [{4, 3}, {2, 1}, {3, 2}])
+        True
+        >>> undirected_isomorphism([{1, 2}, {3, 4}], [{1, 2}, {3, 5}])
+        False
+        """
+        if len(graph_1) != len(graph_2):
+            return False
+
+        vertices_1 = set()
+        vertices_2 = set()
+
+        for start, end in graph_1:
+            vertices_1.add(start)
+            vertices_1.add(end)
+        for start, end in graph_2:
+            vertices_2.add(start)
+            vertices_2.add(end)
+
+        if len(vertices_1) != len(vertices_2):
+            return False
+
+        for perm in permutations(vertices_2):
+            vertex_match = {}
+            for u, v in enumerate(vertices_1):
+                vertex_match[v] = perm[u]
+
+            new_graph = []
+            for start, end in graph_1:
+                new_graph.append((vertex_match[start], vertex_match[end]))
+                new_graph.append((vertex_match[end], vertex_match[start]))
+
+            if sorted(new_graph) == sorted(graph_2):
+                return True
+
+        return False
+
+
+    directed_graph_1 = if_graph_is_directed(graph_1)
+    directed_graph_2 = if_graph_is_directed(graph_2)
+    undirected_graph_1 = if_graph_is_undirected(graph_1)
+    undirected_graph_2 = if_graph_is_undirected(graph_2)
+
+    if directed_graph_1 != directed_graph_2:
+        return False
+    if undirected_graph_1 != undirected_graph_2:
+        return False
+
+    if directed_graph_1 == directed_graph_2:
+        return directed_isomorphism(graph_1, graph_2)
+    if undirected_graph_1 == undirected_graph_2:
+        return undirected_isomorphism(graph_1, graph_2)
+
+def write_results(graph_one: list[tuple], graph_two: list[tuple], file_path: str) -> None:
+    """
+    Function writes the result of all performed 
+    algorithms to a given file.
+
+    :param graph_one: list[tuple], given graph
+    :param graph_two: list[tuple], given graph (for isomorphic check case)
+    :param file_path: str, Name of file to write result to.
+
+    """
+    euler_cycle_res = euler_cycle(graph_one)
+    hamiltonian_res = check_for_ham(graph_one)
+    bipartite_res = bipartite_graph_check(graph_one)
+    isomorphic_res = if_graphs_are_isomorphic(graph_one, graph_two)
+
+
+    with open(file_path, 'w', encoding='utf-8') as file:
+        file.write(f'All possible Euler cycles: {euler_cycle_res}')
+        file.write(f'Existence of Hamiltonian cycle: {hamiltonian_res}')
+        file.write(f'Graph is bipartite: {bipartite_res}')
+        file.write(f'Graph is isomporphic: {isomorphic_res}')
 
 if __name__ == "__main__":
     import doctest
