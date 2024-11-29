@@ -298,7 +298,8 @@ def approp(cur: int, graph: list[list[int]], colours: list[int], colour: int) ->
             return False
     return True
 
-def colouring(graph: list[list[int]], s: int, colours: list[int], k: int, cur: int) -> bool | list[int]:
+def colouring(graph: list[list[int]], s: int, colours: list[int], k: int, \
+              cur: int) -> bool | list[int]:
     """
     The function is "colouring" the graph.
 
@@ -307,7 +308,7 @@ def colouring(graph: list[list[int]], s: int, colours: list[int], k: int, cur: i
     :param colours: list[int], the list with colours' numbers assigned to each vetice.
     :param cur: int, the number of curren vertice.
     :return: bool(False if we can't colour the graph) or the chenged list colours.
-    >>> colouring([[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]], 4, [0, 0, 0, 0], 0)
+    >>> colouring([[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]], 4, [0, 0, 0, 0], 3, 0)
     False
     """
     if cur == s:
@@ -319,8 +320,6 @@ def colouring(graph: list[list[int]], s: int, colours: list[int], k: int, cur: i
 
             if colouring(graph, s, colours, k, cur+1):
                 return colours
-
-            colours[cur] = 0
     return False
 
 def get_colour_seq(file_name: str, colour_list: list) -> str:
@@ -363,7 +362,8 @@ def write_colour(file_in: str, file_out: str, colours: list[str]) -> None:
                     if i.isnumeric():
                         num = max(num, int(i))
             for i in range(num):
-                file.write(f'\t{i+1} [shape = circle style = filled color="{sequence.split()[i]}"]\n')
+                file.write(f'\t{i+1} [shape = circle style = filled \
+color="{sequence.split()[i]}"]\n')
             file.write("}")
 
 def bipartite_graph_check(graph: list[tuple])-> bool:
@@ -636,4 +636,4 @@ if __name__ == "__main__":
     import doctest
     print(doctest.testmod())
 
-write_colour("graph.dot", "colored.dot", ["red", "green", "blue"])
+write_colour("graph.dot", "colored.dot", ["#df7793", "#77df98", "#7786df"])
