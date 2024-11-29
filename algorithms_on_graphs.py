@@ -298,7 +298,7 @@ def approp(cur: int, graph: list[list[int]], colours: list[int], colour: int) ->
             return False
     return True
 
-def colouring(graph: list[list[int]], s: int, colours: list[int], cur: int) -> bool | list[int]:
+def colouring(graph: list[list[int]], s: int, colours: list[int], k: int, cur: int) -> bool | list[int]:
     """
     The function is "colouring" the graph.
 
@@ -307,15 +307,17 @@ def colouring(graph: list[list[int]], s: int, colours: list[int], cur: int) -> b
     :param colours: list[int], the list with colours' numbers assigned to each vetice.
     :param cur: int, the number of curren vertice.
     :return: bool(False if we can't colour the graph) or the chenged list colours.
+    >>> colouring([[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]], 4, [0, 0, 0, 0], 0)
+    False
     """
     if cur == s:
         return True
 
-    for i in range(1, s+1):
+    for i in range(1, k + 1):
         if approp(cur, graph, colours, i):
             colours[cur] = i
 
-            if colouring(graph, s, colours, cur+1):
+            if colouring(graph, s, colours, k, cur+1):
                 return colours
 
             colours[cur] = 0
@@ -326,17 +328,17 @@ def get_colour_seq(file_name: str, colour_list: list) -> str:
     The function returns the result of colouring and the text if not possible.
 
     :param file_name: str, the name of .dot file.
-    :return: str, the chosen numbers (only 3).
+    :param colour_list: str, the chosen numbers (only 3).
     :return: str, the colour sequence in string with whight fpaces.
     """
     matrix = to_symetric(to_matrix(readfile(file_name)))
-    SIZE = len(matrix)
-    chosen_colours = [0]*SIZE
-    if colouring(matrix, SIZE, chosen_colours, 0):
-        chosen_colours = colouring(matrix, SIZE, chosen_colours, 0)
+    s = len(matrix)
+    chosen_colours = [0]*s
+    if colouring(matrix, s, chosen_colours, len(colour_list), 0):
+        chosen_colours = colouring(matrix, s, chosen_colours, len(colour_list), 0)
         result = " ".join(map(lambda x: colour_list[x-1], chosen_colours))
     else:
-        result = "The coloring is imposible."
+        result = "The colouring is imposible."
     return result
 
 def write_colour(file_in: str, file_out: str, colours: list[str]) -> None:
@@ -348,19 +350,22 @@ def write_colour(file_in: str, file_out: str, colours: list[str]) -> None:
     :param colours: str, the chosen numbers (only 3).
     :return: None
     """
-    with open(file_out, "w+", encoding='utf-8') as file, \
-    open(file_in, 'r', encoding='utf-8') as f:
-        sequence = get_colour_seq(file_in, colours)
-        num = 0
-        for line in f.readlines()[:-1]:
-            file.write(line)
-            for i in line:
-                if i.isnumeric():
-                    num = max(num, int(i))
-        for i in range(num):
-            file.write(f'\t{i+1} [shape = circle style = filled color="{sequence.split()[i]}"]\n')
-        file.write("}")
-=======
+    sequence = get_colour_seq(file_in, colours)
+    if sequence == "The colouring is imposible.":
+        print(sequence)
+    else:
+        with open(file_out, "w+", encoding='utf-8') as file, \
+        open(file_in, 'r', encoding='utf-8') as f:
+            num = 0
+            for line in f.readlines()[:-1]:
+                file.write(line)
+                for i in line.split():
+                    if i.isnumeric():
+                        num = max(num, int(i))
+            for i in range(num):
+                file.write(f'\t{i+1} [shape = circle style = filled color="{sequence.split()[i]}"]\n')
+            file.write("}")
+
 def bipartite_graph_check(graph: list[tuple])-> bool:
     """
     Function checks if a given graph is bipartite.
@@ -631,4 +636,4 @@ if __name__ == "__main__":
     import doctest
     print(doctest.testmod())
 
-# write_colour("graph.dot", "colored.dot", ["red", "green", "blue"])
+write_colour("graph.dot", "colored.dot", ["red", "green", "blue"])
