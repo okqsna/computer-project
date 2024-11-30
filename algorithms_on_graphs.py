@@ -33,26 +33,6 @@ def to_undirected(oriented: list[tuple]) -> list[set]:
     """
     return [set(ver) for ver in oriented]
 
-def convert_to_directed(graph: list[set]) -> list[tuple]:
-    """
-    Converts undirected graphs into directed.
-
-    >>> graph = [{'a', 'b'}, {'b', 'c'}, {'c', 'a'}]
-    >>> sorted(convert_to_directed(graph)) == \
-sorted([('a', 'b'), ('b', 'a'), ('b', 'c'), ('c', 'b'), ('c', 'a'), ('a', 'c')])
-    True
-    >>> sorted(convert_to_directed([{'a', 'b'}, {'b', 'c'}, {'c', 'd'}, {'d', 'a'}])) == \
-sorted([('b', 'a'), ('a', 'b'), ('b', 'c'), ('c', 'b'), ('d', 'c'), ('c', 'd'), \
-('d', 'a'), ('a','d')])
-    True
-    """
-    output = []
-    for edge in graph:
-        ver1, ver2 = edge
-        output.extend([(ver1, ver2), (ver2, ver1)])
-
-    return output
-
 
 def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
     """
@@ -79,7 +59,10 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
     length = len(graph)
 
     if flag := isinstance(graph[0], set):
-        p_graph = convert_to_directed(p_graph)
+        p_graph = []
+        for edge in graph:
+            ver1, ver2 = edge
+            p_graph.extend([(ver1, ver2), (ver2, ver1)])
 
     # calculate_way writes all possible cycles here
     all_cycles = []
