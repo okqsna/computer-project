@@ -323,6 +323,8 @@ input_box.bind("<Return>", on_enter)
 
 root.mainloop()
 
+#pylint: enable=all
+
 def to_matrix(graph_list: list[tuple]) -> list[list]:
     """
     The function makes the matrix for the graph.
