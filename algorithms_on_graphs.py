@@ -3,6 +3,11 @@
 from itertools import permutations
 from copy import deepcopy
 
+# yulian ham cycle imports
+import tkinter as tk
+from tkinter.scrolledtext import ScrolledText
+import ast
+
 def readfile(file_name: str) -> list[tuple]:
     """
     The function reads the file .dot and makes 
@@ -115,6 +120,25 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
     return sorted(set(output)) if output else 'There is no euler cycle for this graph'
 
 
+
+
+def permute(nodes):
+    """Generate all permutations of the given list."""
+    if len(nodes) == 1:
+        return [nodes]
+
+    perm = []
+    n_len = len(nodes)
+
+    for i in range(n_len):
+        current = nodes[i]
+        remaining = nodes[:i] + nodes[i+1:]
+
+        for p in permute(remaining):
+            perm.append([current] + p)
+
+    return perm
+
 def check_for_ham(graph: list[tuple]) -> list | str:
     """
     Checks a graph if it has a hamiltonian cycle or not
@@ -123,7 +147,7 @@ def check_for_ham(graph: list[tuple]) -> list | str:
     is the vertice, and the second is the connection
 
     :return: returns either a list of the vertices of the hamiltonian
-    cycle, or says that it doesn't exist
+    cycle, or says that it does nto exist
 
     # UNORIENTED
     >>> g = [{1, 2}, {2, 3}, {3, 1}]
@@ -202,23 +226,6 @@ def check_for_ham(graph: list[tuple]) -> list | str:
     all_keys = [k for k in con_dic]
 
     # Make all possible
-    def permute(nodes):
-
-        if len(nodes) == 1:
-            return [nodes]
-
-        perm = []
-        n_len = len(nodes)
-
-        for i in range(n_len):
-            current = nodes[i]
-            remaining = nodes[:i] + nodes[i+1:]
-
-            for p in permute(remaining):
-                perm.append([current] + p)
-
-        return perm
-
     all_possible = permute(all_keys)
 
     # Add the first to the end of each list
@@ -240,6 +247,92 @@ def check_for_ham(graph: list[tuple]) -> list | str:
 
 
     return "There is no Hamiltonian cycle for this graph"
+
+#pylint: disable=all
+
+def parse_input(text):
+    try:
+        return ast.literal_eval(text)
+    except Exception as e:
+        return None
+
+# display of results
+def display_results(permutations, correct_path, indx=0):
+    output_box.tag_configure("green_text", foreground="green")
+
+    # When all results are displayed
+    if indx >= len(permutations):
+        output_box.insert(tk.END, "Checking complete.\n")
+        if correct_path:
+            output_box.insert(tk.END, f"The correct Hamiltonian cycle is: {correct_path}\n")
+        else:
+            output_box.insert(tk.END, "No Hamiltonian cycle found.\n")
+        output_box.see(tk.END)
+        return None
+
+    path = permutations[indx]
+    valid_cycle = (path == correct_path)
+    result = "Correct" if valid_cycle else "Wrong"
+
+    output_box.insert(tk.END, f"Checking: {path} - ")
+
+    if valid_cycle:
+        output_box.insert(tk.END,f"{result}\n", "green_text")
+    else:
+        output_box.insert(tk.END,f"{result}\n")
+
+    output_box.see(tk.END)
+    root.after(50, lambda: display_results(permutations, correct_path, indx + 1))
+
+
+# Tkinter window setup
+root = tk.Tk()
+root.title("Hamiltonian Cycle Checker")
+root.geometry("800x1000")
+
+font_style = ("Arial", 14)
+label = tk.Label(root, text="Enter graph vertices as a list of sets or tuples (for example: [(1, 2), (2, 3), (3, 1)]):", font=font_style)
+label.pack(pady=10)
+
+input_box = tk.Entry(root, font=("Arial", 14), width=80)
+input_box.pack(pady=10)
+
+output_box = ScrolledText(root, font=("Arial", 12), width=90, height=50, state='normal')
+output_box.pack(pady=10)
+
+
+def on_enter(event):
+    input_text = input_box.get()
+    input_box.delete(0, tk.END)
+    graph = parse_input(input_text)
+    if graph:
+        output_box.delete(1.0, tk.END)
+        output_box.insert(tk.END, "Processing...\n")
+        root.update()
+
+        correct_path_or_message = check_for_ham(graph)
+        permutations = permute([key for key in {k for edge in graph for k in edge}])
+
+        # Closes cycle
+        for p in permutations:
+            p.append(p[0])
+
+        # No hamiltonian, all are wrong
+        if isinstance(correct_path_or_message, str):
+            output_box.insert(tk.END, correct_path_or_message + "\n")
+            display_results(permutations, [])
+
+        # Yes Hamiltonian, checks which one is correct
+        else:
+            display_results(permutations, correct_path_or_message)
+    else:
+        output_box.insert(tk.END, "Invalid input format. Please try again.\n")
+    output_box.see(tk.END)
+
+
+input_box.bind("<Return>", on_enter)
+
+root.mainloop()
 
 def to_matrix(graph_list: list[tuple]) -> list[list]:
     """
