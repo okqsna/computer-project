@@ -1,7 +1,5 @@
 """Checks if graphs are isomorphic""" 
 
-from itertools import permutations
-
 def if_graph_is_directed(graph: list[tuple]) -> bool:
     """
     Checks if graph is directed
@@ -76,7 +74,7 @@ def directed_isomorphism(graph_1: list[tuple], graph_2: list[tuple]) -> bool:
     if len(vertices_1) != len(vertices_2):
         return False
 
-    for perm in permutations(vertices_2):
+    for perm in permute(vertices_2):
         vertex_match = {}
         for u, v in enumerate(vertices_1):
             vertex_match[v] = perm[u]
@@ -123,7 +121,7 @@ def undirected_isomorphism(graph_1: list[set], graph_2: list[set]) -> bool:
     if len(vertices_1) != len(vertices_2):
         return False
 
-    for perm in permutations(vertices_2):
+    for perm in permute(vertices_2):
         vertex_match = {}
         for u, v in enumerate(vertices_1):
             vertex_match[v] = perm[u]
