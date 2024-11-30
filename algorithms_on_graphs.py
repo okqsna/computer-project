@@ -27,17 +27,6 @@ def readfile(file_name: str) -> list[tuple]:
                     i += 1
     return res
 
-def to_undirected(oriented: list[tuple]) -> list[set]:
-    """
-    The function makes from the list of tuples a list of sets.
-
-    :param oriented: list[tuple], the list for oriented graph.
-    :return: list[list], the list for undirected graph.
-    >>> to_undirected([(1, 2), (2, 5), (2, 3), (3, 4), (1, 3), (4, 5), (1, 5)])
-    [{1, 2}, {2, 5}, {2, 3}, {3, 4}, {1, 3}, {4, 5}, {1, 5}]
-    """
-    return [set(ver) for ver in oriented]
-
 
 def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
     """
@@ -686,30 +675,7 @@ def if_graphs_are_isomorphic(graph_1: list[tuple], graph_2: list[tuple]) -> bool
     if undirected_graph_1 == undirected_graph_2:
         return undirected_isomorphism(graph_1, graph_2)
 
-def write_results(graph_one: list[tuple], graph_two: list[tuple], file_path: str) -> None:
-    """
-    Function writes the result of all performed 
-    algorithms to a given file.
-
-    :param graph_one: list[tuple], given graph
-    :param graph_two: list[tuple], given graph (for isomorphic check case)
-    :param file_path: str, Name of file to write result to.
-
-    """
-    euler_cycle_res = euler_cycle(graph_one)
-    hamiltonian_res = check_for_ham(graph_one)
-    bipartite_res = bipartite_graph_check(graph_one)
-    isomorphic_res = if_graphs_are_isomorphic(graph_one, graph_two)
-
-
-    with open(file_path, 'w', encoding='utf-8') as file:
-        file.write(f'All possible Euler cycles: {euler_cycle_res}')
-        file.write(f'Existence of Hamiltonian cycle: {hamiltonian_res}')
-        file.write(f'Graph is bipartite: {bipartite_res}')
-        file.write(f'Graph is isomporphic: {isomorphic_res}')
 
 if __name__ == "__main__":
     import doctest
     print(doctest.testmod())
-
-write_colour("graph.dot", "colored.dot", ["#df7793", "#77df98", "#7786df"])
