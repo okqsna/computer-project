@@ -22,17 +22,6 @@ def readfile(file_name: str) -> list[tuple]:
                     i += 1
     return res
 
-def to_undirected(oriented: list[tuple]) -> list[set]:
-    """
-    The function makes from the list of tuples a list of sets.
-
-    :param oriented: list[tuple], the list for oriented graph.
-    :return: list[list], the list for undirected graph.
-    >>> to_undirected([(1, 2), (2, 5), (2, 3), (3, 4), (1, 3), (4, 5), (1, 5)])
-    [{1, 2}, {2, 5}, {2, 3}, {3, 4}, {1, 3}, {4, 5}, {1, 5}]
-    """
-    return [set(ver) for ver in oriented]
-
 
 def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
     """
