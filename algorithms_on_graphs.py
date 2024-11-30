@@ -357,15 +357,21 @@ root.mainloop()
 
 #pylint: enable=all
 
-def to_matrix(graph_list: list[tuple]) -> list[list]:
+def to_matrix(graph_list: list[tuple | set]) -> list[list]:
     """
     The function makes the matrix for the graph.
 
-    :param graph_list: list[tuple], the graph.
+    :param graph_list: list[tuple | set], the graph.
     :return: list[list], matrix.
     >>> to_matrix([(1, 2), (2, 3), (3, 4), (1, 5), (5, 3)])
     [[0, 0, 0, 0, 0], [1, 0, 0, 0, 0], [0, 1, 0, 0, 1], [0, 0, 1, 0, 0], [1, 0, 0, 0, 0]]
     """
+    if len(graph_list) > 0 and isinstance(graph_list[0], set) is True:
+        gr = []
+        for el in graph_list:
+            gr.append((el[0], el[1]))
+            gr.append((el[1], el[0]))
+        graph_list = gr
     leng = max(max(i[0], i[1]) for i in graph_list)
     return [[1*((i+1, j+1) in graph_list) for i in range(leng)] for j in range(leng)]
 
