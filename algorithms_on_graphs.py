@@ -16,16 +16,27 @@ def readfile(file_name: str) -> list[tuple]:
     :param file_name: str, the name of the file.
     :return: list[tuple], the list for graph.
     """
-    res = []
     with open(file_name, 'r', encoding='utf-8') as file:
-        for line in file:
-            if "-" in line:
-                vertices = line.strip().split(" -> ")
-                i = 0
-                while i != len(vertices) - 1:
-                    res.append((int(vertices[i]), int(vertices[i + 1])))
-                    i += 1
-    return res
+        first = file.readline()
+        res = []
+        if "digraph" in first:
+            for line in file:
+                if "->" in line:
+                    vertices = line.strip().split(" -> ")
+                    i = 0
+                    while i != len(vertices) - 1:
+                        res.append((int(vertices[i]), int(vertices[i + 1])))
+                        i += 1
+            return res
+        else:
+            for line in file:
+                if "--" in line:
+                    vertices = line.strip().split(" -- ")
+                    i = 0
+                    while i != len(vertices) - 1:
+                        res.append({int(vertices[i]), int(vertices[i + 1])})
+                        i += 1
+            return list(res)
 
 
 def convert_to_directed(graph: list[set]) -> list[tuple]:
