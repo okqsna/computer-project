@@ -411,6 +411,17 @@ def approp(cur: int, graph: list[list[int]], colours: list[int], colour: int) ->
     return True
 
 def visualizing(file_name: str, cur: int, colour: int, st_col: list[str], ver_list: list[str]) -> None:
+    """
+    The function helps visualize the algorithm's work. It writes the file every time the colour is being checked
+    adding for the output file the line with new description(colour). The file exists from the very begining and 
+    from the begining obtains the same information the input file has.
+
+    :param file_name: str, the output file.
+    :param cur: int, the number of the vertice.
+    :param colour: int, the number of the colour.
+    :param st_col: list[str], the input list with colour names.
+    :param ver_list: list[str], the initial list of vertices names.
+    """
     content = []
     time.sleep(0.89)
     with open(file_name, "r", encoding="utf-8") as file:
@@ -430,7 +441,11 @@ def colouring(graph: list[list[int]], s: int, colours: list[int], st_col: list[s
     :param graph: list[list[int]], the matrix of the graph.
     :param s: int, the number of vetices.
     :param colours: list[int], the list with colours' numbers assigned to each vertice.
+    :param st_col: list[str], the input list with colour names.
     :param cur: int, the number of curren vertice.
+    :param visualize: bool, wheather the visualisation is needed.
+    :param file_out: str, the output file.
+    :param ver_list: list[str], the initial list of vertices names.
     :return: bool(False if we can't color the graph) or the changed list colours.
     """
     if cur == s:
@@ -451,7 +466,9 @@ def get_colour_seq(file_name: str, colour_list: list[str], visualize: bool, file
     The function returns the result of colouring and the text if not possible.
 
     :param file_name: str, the name of .dot file.
-    :param colour_list: list[str], the chosen numbers (only 3).
+    :param colour_list: list[str], the chosen colours' names (only 3).
+    :param visualize: bool, wheather the visualisation is needed.
+    :param file_out: str, the output file.
     :return: str, the colour sequence in string with white spaces.
     """
     rel = readfile(file_name, True)
@@ -471,7 +488,8 @@ def write_colour(file_in: str, file_out: str, colours: list[str], visualize = Fa
 
     :param file_in: str, the name of input .dot file.
     :param file_out: str, the name of output .dot file.
-    :param colours: str, the chosen numbers (only 3).
+    :param colours: str, the chosen colours' names (only 3).
+    :param visualize: bool, wheather the visualisation is needed.
     :return: None
     """
     if visualize is True:
