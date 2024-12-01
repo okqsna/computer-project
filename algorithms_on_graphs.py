@@ -8,7 +8,7 @@ import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 import ast
 
-def readfile(file_name: str) -> list[tuple]:
+def readfile(file_name: str, extra_list = False) -> list[tuple]:
     """
     The function reads the file .dot and makes 
     the list of tuples of neighbour vertices.
@@ -19,25 +19,26 @@ def readfile(file_name: str) -> list[tuple]:
     with open(file_name, 'r', encoding='utf-8') as file:
         first = file.readline()
         res = []
+        verts_set = set()
         if "digraph" in first:
-            for line in file:
-                if "->" in line:
-                    vertices = line.strip().split(" -> ")
-                    i = 0
-                    while i != len(vertices) - 1:
-                        res.append((int(vertices[i]), int(vertices[i + 1])))
-                        i += 1
-            return res
+            spl = "->"
         else:
-            for line in file:
-                if "--" in line:
-                    vertices = line.strip().split(" -- ")
-                    i = 0
-                    while i != len(vertices) - 1:
-                        res.append({int(vertices[i]), int(vertices[i + 1])})
-                        i += 1
-            return list(res)
-
+            spl = "--"
+        for line in file:
+            if spl in line:
+                verts = line.strip().split(spl)
+                i = 0
+                verts_set.add(verts[0].strip())
+                while i != len(verts) - 1:
+                    verts_set.add(verts[i + 1].strip())
+                    res.append((verts[i].strip(), verts[i + 1].strip()))
+                    i += 1
+        verts_list = sorted(list(verts_set))
+        res1 = [(verts_list.index(i[0]) + 1, verts_list.index(i[1]) + 1) for i in res]
+        res2 = [set(i) for i in res1]
+        if extra_list is True:
+            return [res1, verts_list] if spl == "->" else [res2, verts_list]
+        return res1 if spl == "->" else res2
 
 def convert_to_directed(graph: list[set]) -> list[tuple]:
     """
