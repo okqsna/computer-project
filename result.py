@@ -19,15 +19,15 @@ def main():
     Core of communication with user via argparse
     """
 
-    parser = argparse.ArgumentParser(description="Process a graph with a selected algorithm.")
-    parser.add_argument("file", help="Path to the .dot file with the graph.")
-    parser.add_argument("--add-file", help="Path to the .dot file with\
-an additional graph (required for isomorphism checking).")
-    parser.add_argument("algorithm", help="Name of the algorithm to apply to the graph.")
-    parser.add_argument("--file-out", help="File to write the output\
-(required for coloring only).", type=str)
-    parser.add_argument("--colors", help="List of colors for graph coloring\
-(required for coloring only).", type=str)
+    parser = argparse.ArgumentParser(description = 'Process a graph with a selected algorithm.')
+    parser.add_argument('file', help = 'Path to the .dot file with the graph.')
+    parser.add_argument('--add-file', help = 'Path to the .dot file with\
+an additional graph (required for isomorphism checking).')
+    parser.add_argument('algorithm', help = 'Name of the algorithm to apply to the graph.')
+    parser.add_argument('--file-out', help = 'File to write the output\
+(required for coloring only).', type = str)
+    parser.add_argument('--colors', help = 'List of colors for graph coloring\
+(required for coloring only).', type = str)
 
     args = parser.parse_args()
 
@@ -58,7 +58,7 @@ Use the --add-file option.")
     else:
         print(f"Unknown algorithm '{args.algorithm}'. Choose from the available options:")
         for name, (desc, _) in ALGORITHMS.items():
-            print(f"  - {name}: {desc}")
+            print(f"  {name}: {desc}")
 
 
 if __name__ == "__main__":
