@@ -76,16 +76,18 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
     >>> graph = [('a', 'b'), ('c', 'b'), ('d', 'c'), ('d', 'a'), \
                  ('b', 'd'), ('b', 'd')]
     >>> euler_cycle(graph)
-    ['abdcbd']
+    [['a', 'b', 'd', 'c', 'b', 'd']]
 
     >>> graph1 = [{'a', 'b'}, {'b', 'c'}, {'c', 'd'}, {'d', 'a'}]
     >>> euler_cycle(graph1)
-    ['abcd', 'adcb']
+    [['a', 'b', 'c', 'd'], ['a', 'd', 'c', 'b']]
     >>> graph2 = [{'a', 'b'}, {'b', 'c'}, {'c', 'd'}, {'d', 'a'}, {'a', 'e'}, {'b', 'e'}, \
 {'c', 'e'}, {'d', 'e'}, {'f', 'd'}, {'f', 'c'}, {'g', 'a'}, {'g', 'b'}]
-    >>> 'agbedabcdfce' in euler_cycle(graph2)
+    >>> ['a', 'e', 'b' ,'g' , 'a' , 'b' , 'c' , 'f' , 'd', 'e', 'c', 'd'] in euler_cycle(graph2)
     True
     """
+    if not graph:
+        return "This graph is empty"
     # deepcopy to be on the safe side
     p_graph = deepcopy(graph)
     length = len(graph)
@@ -111,40 +113,14 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
         for pair in graph:
             if pair[0] == position:
                 if pair[1] == vertex and len(way) == length:
-                    all_cycles.append(way+vertex)
+                    all_cycles.append(way)
                 calculate_way(graph, pair[1], way+pair[1], pair)
 
-    # We need to decide what will be start vertice
-    vertex = 'a'
+    # This is a vertix from which we move
+    vertex = p_graph[0][0] if p_graph[0][0] < p_graph[0][1] else p_graph[0][1]
     calculate_way(p_graph + ['*', '*'], vertex, vertex, '*')
-    edges = [ver1 + ver2 for ver1, ver2 in graph]
 
-    output = []
-
-    if flag:
-        # return all_cycles
-        # Selects those cycles that contain all edges for undirected graph
-        for cycle in all_cycles:
-            for edge in edges:
-                # Checks whether this cycle contains this edge
-                if edge not in cycle and edge[::-1] not in cycle:
-                    break
-            else:
-                # If this cycle has all edges we add it to output
-                output.append(cycle[:-1])
-
-    else:
-        # Selects those cycles that contain all edges for directed graph
-        for cycle in all_cycles:
-            for edge in edges:
-                # Checks whether this cycle contains this edge
-                if edge not in cycle:
-                    break
-            else:
-                # If this cycle has all edges we add it to output
-                output.append(cycle[:-1])
-
-    return sorted(set(output)) if output else 'There is no euler cycle for this graph'
+    return [list(el) for el in sorted(set(all_cycles))] if all_cycles else 'There is no euler cycle for this graph'
 
 
 
