@@ -9,13 +9,15 @@ import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 import ast
 
-def readfile(file_name: str, extra_list = False) -> list[tuple]:
+def readfile(file_name: str, extra_list = False) -> list[tuple] | list[set]:
     """
     The function reads the file .dot and makes 
     the list of tuples of neighbour vertices.
 
     :param file_name: str, the name of the file.
-    :return: list[tuple], the list for graph.
+    :return: list[tuple] | list[set], the list for graph.
+    list of tuples for directed graph.
+    list of sets for not directed graph.
     """
     with open(file_name, 'r', encoding='utf-8') as file:
         first = file.readline()
@@ -510,10 +512,22 @@ def bipartite_graph_check(graph: list[tuple] | list[set])-> bool:
     :return: bool, function returns True if graph is bipartite, 
     returns False when it is not.
 
-    >>> graph = [{1, 2}, {0, 2}, {0, 1}] # непарний цикл
+    >>> graph = [{'a', 'b'}, {'b', 'c'}, {'c', 'e'}, {'c', 'd'}, {'a', 'd'}, {'a', 'e'}]
     >>> bipartite_graph_check(graph)
+    True
+    >>> graph = [{'a', 'b'}, {'a', 'c'}, {'a', 'd'}, {'b', 'c'}, {'b', 'd'}, {'c', 'd'}]
+    >>> bipartite_graph_check(graph) # example for complete graph with more than 2 vertices
     False
-    >>> graph = [(0, 1), (1, 2), (2, 3), (3, 0)] # простий граф з парним циклом
+    >>> graph = [{'a', 'b'}, {'b', 'c'}, {'c', 'd'}, {'d', 'e'}, {'e', 'a'}]
+    >>> bipartite_graph_check(graph) # example for cycle graph with odd number of vertices
+    False
+    >>> graph = [{1, 2}, {2, 3}, {3, 1}, {1, 4}, {2, 4}, {3, 4}]
+    >>> bipartite_graph_check(graph) # example for wheel graph
+    False
+    >>> graph = [{'01', '11'}, {'11', '10'}, {'10', '00'}]
+    >>> bipartite_graph_check(graph) # example for hypercube graph
+    True
+    >>> graph = [('a', 'x'), ('a', 'y'), ('b', 'x')]
     >>> bipartite_graph_check(graph)
     True
     """
