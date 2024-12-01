@@ -3,7 +3,7 @@
 from itertools import permutations
 from copy import deepcopy
 
-# yulian ham cycle imports
+#  yulian ham cycle imports
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 import ast
@@ -43,6 +43,9 @@ def convert_to_directed(graph: list[set]) -> list[tuple]:
     """
     Converts undirected graphs into directed.
 
+    :param graph: list[set], undirected graph
+    :return: list[tuple], directed graph
+
     >>> graph = [{'a', 'b'}, {'b', 'c'}, {'c', 'a'}]
     >>> sorted(convert_to_directed(graph)) == \
 sorted([('a', 'b'), ('b', 'a'), ('b', 'c'), ('c', 'b'), ('c', 'a'), ('a', 'c')])
@@ -64,8 +67,8 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
     """
     Check whether 
 
-    :param graph: list of tuples of letters that symbolyize verteces.
-    :return: list of all possible euler cycles.
+    :param graph: list[tuple] or list[set], list of tuples of letters that symbolyize verteces.
+    :return: list[list[str]],  list of all possible euler cycles.
 
     >>> graph = [('a', 'b'), ('c', 'b'), ('d', 'c'), ('d', 'a'), \
                  ('b', 'd'), ('b', 'd')]
@@ -168,7 +171,7 @@ def check_for_ham(graph: list[tuple]) -> list | str:
     is the vertice, and the second is the connection
 
     :return: returns either a list of the vertices of the hamiltonian
-    cycle, or says that it does nto exist
+    cycle, or says that it does not exist
 
     # UNORIENTED
     >>> g = [{1, 2}, {2, 3}, {3, 1}]
@@ -390,11 +393,11 @@ def to_symetric(matrix: list[list]) -> list[list]:
 
 def approp(cur: int, graph: list[list[int]], colours: list[int], colour: int) -> bool:
     """
-    The function checks wheather we can assign colour to the vertice.
+    The function checks whether we can assign colour to the vertice.
 
-    :param cur: int, the number of curren vertice.
+    :param cur: int, the number of current vertice.
     :param graph: list[list[int]], the matrix of the graph.
-    :param colours: list[int], the list with colours' numbers assigned to each vetice.
+    :param colours: list[int], the list with colours' numbers assigned to each vertice.
     :param colour: int, the colour's number wanted to be assigned.
     :return: bool, if the colour is appropriate - True, else - False.
     """
@@ -410,9 +413,9 @@ def colouring(graph: list[list[int]], s: int, colours: list[int], k: int, \
 
     :param graph: list[list[int]], the matrix of the graph.
     :param s: int, the number of vetices.
-    :param colours: list[int], the list with colours' numbers assigned to each vetice.
+    :param colours: list[int], the list with colours' numbers assigned to each vertice.
     :param cur: int, the number of curren vertice.
-    :return: bool(False if we can't colour the graph) or the chenged list colours.
+    :return: bool(False if we can't color the graph) or the changed list colours.
     >>> colouring([[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]], 4, [0, 0, 0, 0], 3, 0)
     False
     """
@@ -433,7 +436,7 @@ def get_colour_seq(file_name: str, colour_list: list) -> str:
 
     :param file_name: str, the name of .dot file.
     :param colour_list: str, the chosen numbers (only 3).
-    :return: str, the colour sequence in string with whight fpaces.
+    :return: str, the colour sequence in string with white spaces.
     """
     matrix = to_symetric(to_matrix(readfile(file_name)))
     s = len(matrix)
@@ -471,7 +474,7 @@ def write_colour(file_in: str, file_out: str, colours: list[str]) -> None:
 color="{sequence.split()[i]}"]\n')
             file.write("}")
 
-def bipartite_graph_check(graph: list[tuple])-> bool:
+def bipartite_graph_check(graph: list[tuple] | list[set])-> bool:
     """
     Function checks if a given graph is bipartite.
 
@@ -482,40 +485,24 @@ def bipartite_graph_check(graph: list[tuple])-> bool:
     to check whether the graph satisfies this property
     by coloring vertices into 2 colors.
 
-    :param graph: list[tuple], given graph
+    :param graph: list[tuple] or list[set], given graph
     :return: bool, function returns True if graph is bipartite, 
     returns False when it is not.
 
-    >>> graph = [(1, 4), (1, 5), (2, 5), (2, 6), (3, 6), (3, 4)] 
-    >>> bipartite_graph_check(graph)
-    True
-    >>> graph = [(1, 2), (2, 3), (3, 1), (3, 4), (4, 5)]
+    >>> graph = [{1, 2}, {0, 2}, {0, 1}] # непарний цикл
     >>> bipartite_graph_check(graph)
     False
+    >>> graph = [(0, 1), (1, 2), (2, 3), (3, 0)] # простий граф з парним циклом
+    >>> bipartite_graph_check(graph)
+    True
     """
-    def to_oriented(graph: list[tuple]) -> list[tuple]:
-        """
-        Function transforms not oriented graph into oriented.
-
-        :param graph: list[tuple], given graph
-        :return: list[tuple], updated graph
-    
-        >>> graph = [(1, 2), (1, 3), (2, 4), (3, 4), (4, 5)]
-        >>> to_oriented(graph)
-        [(1, 2), (1, 3), (2, 4), (3, 4), (4, 5), (2, 1), (3, 1), (4, 2), (4, 3), (5, 4)]
-        """
-        graph_new = graph
-        for v1, v2 in graph:
-            if (v2, v1) not in graph:
-                graph_new.append((v2, v1))
-        return graph_new
 
     def get_neighbouring_values(graph: list[tuple]) -> dict:
         """
         Function looks for every neighbouring vertix 
         and returns it as a dictionary.
 
-        :param graph: given graph
+        :param graph: list[tuple], given graph
         :return: dict, key is a vertex, value is all of the neighbouring vertices
 
         >>> graph = [(1, 2), (1, 3), (2, 4), (3, 4), (4, 5), (2, 1), (3, 1), (4, 2), (4, 3), (5, 4)]
@@ -534,8 +521,7 @@ def bipartite_graph_check(graph: list[tuple])-> bool:
         return neighbour_vertex
 
     # getting values from additional functions
-    graph_new = to_oriented(graph)
-    neighbour_vertix = get_neighbouring_values(graph_new)
+    neighbour_vertix = get_neighbouring_values(convert_to_directed(graph))
 
     # choosing a vertex to start with, setting its color
     start_vertix = list(neighbour_vertix)[0]
