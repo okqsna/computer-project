@@ -412,7 +412,7 @@ def approp(cur: int, graph: list[list[int]], colours: list[int], colour: int) ->
 
 def visualizing(file_name: str, cur: int, colour: int, st_col: list[str], ver_list: list[str]) -> None:
     content = []
-    time.sleep(1)
+    time.sleep(0.89)
     with open(file_name, "r", encoding="utf-8") as file:
         content = file.readlines()
     with open(file_name, 'w+', encoding='utf-8') as file:
@@ -432,8 +432,6 @@ def colouring(graph: list[list[int]], s: int, colours: list[int], st_col: list[s
     :param colours: list[int], the list with colours' numbers assigned to each vertice.
     :param cur: int, the number of curren vertice.
     :return: bool(False if we can't color the graph) or the changed list colours.
-    >>> colouring([[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]], 4, [0, 0, 0, 0], 3, 0)
-    False
     """
     if cur == s:
         return True
@@ -484,8 +482,8 @@ def write_colour(file_in: str, file_out: str, colours: list[str], visualize = Fa
             for line in content:
                 file.write(line)
     sequence = get_colour_seq(file_in, colours, visualize, file_out)
-    if sequence == "The colouring is imposible.":
-        print(sequence)
+    if sequence[0] == "The colouring is imposible.":
+        print(sequence[0])
     else:
         sequence, verts = sequence[0], sequence[1]
         with open(file_out, "w+", encoding='utf-8') as file, \
