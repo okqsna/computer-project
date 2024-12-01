@@ -2,7 +2,6 @@
 
 import time
 
-from itertools import permutations
 from copy import deepcopy
 
 #  yulian ham cycle imports
@@ -10,13 +9,15 @@ import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 import ast
 
-def readfile(file_name: str, extra_list = False) -> list[tuple]:
+def readfile(file_name: str, extra_list = False) -> list[tuple] | list[set]:
     """
     The function reads the file .dot and makes 
     the list of tuples of neighbour vertices.
 
     :param file_name: str, the name of the file.
-    :return: list[tuple], the list for graph.
+    :return: list[tuple] | list[set], the list for graph.
+    list of tuples for directed graph.
+    list of sets for not directed graph.
     """
     with open(file_name, 'r', encoding='utf-8') as file:
         first = file.readline()
@@ -529,10 +530,22 @@ def bipartite_graph_check(graph: list[tuple] | list[set])-> bool:
     :return: bool, function returns True if graph is bipartite, 
     returns False when it is not.
 
-    >>> graph = [{1, 2}, {0, 2}, {0, 1}] # непарний цикл
+    >>> graph = [{'a', 'b'}, {'b', 'c'}, {'c', 'e'}, {'c', 'd'}, {'a', 'd'}, {'a', 'e'}]
     >>> bipartite_graph_check(graph)
+    True
+    >>> graph = [{'a', 'b'}, {'a', 'c'}, {'a', 'd'}, {'b', 'c'}, {'b', 'd'}, {'c', 'd'}]
+    >>> bipartite_graph_check(graph) # example for complete graph with more than 2 vertices
     False
-    >>> graph = [(0, 1), (1, 2), (2, 3), (3, 0)] # простий граф з парним циклом
+    >>> graph = [{'a', 'b'}, {'b', 'c'}, {'c', 'd'}, {'d', 'e'}, {'e', 'a'}]
+    >>> bipartite_graph_check(graph) # example for cycle graph with odd number of vertices
+    False
+    >>> graph = [{1, 2}, {2, 3}, {3, 1}, {1, 4}, {2, 4}, {3, 4}]
+    >>> bipartite_graph_check(graph) # example for wheel graph
+    False
+    >>> graph = [{'01', '11'}, {'11', '10'}, {'10', '00'}]
+    >>> bipartite_graph_check(graph) # example for hypercube graph
+    True
+    >>> graph = [('a', 'x'), ('a', 'y'), ('b', 'x')]
     >>> bipartite_graph_check(graph)
     True
     """
@@ -600,7 +613,7 @@ def if_graphs_are_isomorphic(graph_1: list[tuple], graph_2: list[tuple]) -> bool
     >>> if_graphs_are_isomorphic([(1, 2), (2, 1), (3, 4)], [(2, 1), (1, 2), (4, 3)])
     True
     >>> if_graphs_are_isomorphic([(1, 2), (2, 3)], [(3, 2), (2, 1)])
-    False
+    True
     """
 
     def if_graph_is_directed(graph: list[tuple]) -> bool:
@@ -615,8 +628,9 @@ def if_graphs_are_isomorphic(graph_1: list[tuple], graph_2: list[tuple]) -> bool
         >>> if_graph_is_directed([(1, 2), (2, 3), (3, 1), (1, 3)])
         False
         """
-        for edge in graph:
-            if (edge[1], edge[0]) in graph:
+        graphs = set(graph)
+        for edge in graphs:
+            if (edge[1], edge[0]) in graphs:
                 return False
         return True
 
@@ -666,7 +680,7 @@ def if_graphs_are_isomorphic(graph_1: list[tuple], graph_2: list[tuple]) -> bool
         if len(vertices_1) != len(vertices_2):
             return False
 
-        for perm in permutations(vertices_2):
+        for perm in permute(list(vertices_2)):
             vertex_match = {}
             for u, v in enumerate(vertices_1):
                 vertex_match[v] = perm[u]
@@ -710,7 +724,7 @@ def if_graphs_are_isomorphic(graph_1: list[tuple], graph_2: list[tuple]) -> bool
         if len(vertices_1) != len(vertices_2):
             return False
 
-        for perm in permutations(vertices_2):
+        for perm in permute(list(vertices_2)):
             vertex_match = {}
             for u, v in enumerate(vertices_1):
                 vertex_match[v] = perm[u]
