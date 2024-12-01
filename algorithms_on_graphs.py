@@ -1,5 +1,7 @@
 """Computer project from discrete mathematics"""
 
+import time
+
 from itertools import permutations
 from copy import deepcopy
 
@@ -373,8 +375,9 @@ def to_matrix(graph_list: list[tuple | set]) -> list[list]:
     if len(graph_list) > 0 and isinstance(graph_list[0], set) is True:
         gr = []
         for el in graph_list:
-            gr.append((el[0], el[1]))
-            gr.append((el[1], el[0]))
+            e = list(el)
+            gr.append((e[0], e[1]))
+            gr.append((e[1], e[0]))
         graph_list = gr
     leng = max(max(i[0], i[1]) for i in graph_list)
     return [[1*((i+1, j+1) in graph_list) for i in range(leng)] for j in range(leng)]
@@ -407,8 +410,20 @@ def approp(cur: int, graph: list[list[int]], colours: list[int], colour: int) ->
             return False
     return True
 
-def colouring(graph: list[list[int]], s: int, colours: list[int], k: int, \
-              cur: int) -> bool | list[int]:
+def visualizing(file_name: str, cur: int, colour: int, st_col: list[str], ver_list: list[str]) -> None:
+    content = []
+    time.sleep(1)
+    with open(file_name, "r", encoding="utf-8") as file:
+        content = file.readlines()
+    with open(file_name, 'w+', encoding='utf-8') as file:
+        for line in content[:-1]:
+            file.write(line)
+        file.write(f'\t{ver_list[cur]} [shape = circle style = filled \
+color="{st_col[colour - 1]}"]\n')
+        file.write("}")
+
+def colouring(graph: list[list[int]], s: int, colours: list[int], st_col: list[str], \
+              cur: int, visualize: bool, file_out: str, ver_list: list[str]) -> bool | list[int]:
     """
     The function is "colouring" the graph.
 
@@ -423,33 +438,36 @@ def colouring(graph: list[list[int]], s: int, colours: list[int], k: int, \
     if cur == s:
         return True
 
-    for i in range(1, k + 1):
+    for i in range(1, len(st_col) + 1):
+        if visualize is True:
+            visualizing(file_out, cur, i, st_col, ver_list)
         if approp(cur, graph, colours, i):
             colours[cur] = i
 
-            if colouring(graph, s, colours, k, cur+1):
+            if colouring(graph, s, colours, st_col, cur+1, visualize, file_out, ver_list):
                 return colours
     return False
 
-def get_colour_seq(file_name: str, colour_list: list) -> str:
+def get_colour_seq(file_name: str, colour_list: list[str], visualize: bool, file_out: str) -> str:
     """
     The function returns the result of colouring and the text if not possible.
 
     :param file_name: str, the name of .dot file.
-    :param colour_list: str, the chosen numbers (only 3).
+    :param colour_list: list[str], the chosen numbers (only 3).
     :return: str, the colour sequence in string with white spaces.
     """
-    matrix = to_symetric(to_matrix(readfile(file_name)))
+    rel = readfile(file_name, True)
+    matrix = to_symetric(to_matrix(rel[0]))
     s = len(matrix)
     chosen_colours = [0]*s
-    if colouring(matrix, s, chosen_colours, len(colour_list), 0):
-        chosen_colours = colouring(matrix, s, chosen_colours, len(colour_list), 0)
+    if colouring(matrix, s, chosen_colours, colour_list, 0, visualize, file_out, rel[1]):
+        chosen_colours = colouring(matrix, s, chosen_colours, colour_list, 0, visualize, file_out, rel[1])
         result = " ".join(map(lambda x: colour_list[x-1], chosen_colours))
     else:
         result = "The colouring is imposible."
-    return result
+    return [result, rel[1]]
 
-def write_colour(file_in: str, file_out: str, colours: list[str]) -> None:
+def write_colour(file_in: str, file_out: str, colours: list[str], visualize = False) -> None:
     """
     The function writes the coloured graph into the file.
 
@@ -458,22 +476,27 @@ def write_colour(file_in: str, file_out: str, colours: list[str]) -> None:
     :param colours: str, the chosen numbers (only 3).
     :return: None
     """
-    sequence = get_colour_seq(file_in, colours)
+    if visualize is True:
+        content = []
+        with open(file_in, 'r', encoding='utf-8') as file:
+            content = file.readlines()
+        with open(file_out, "w+", encoding='utf-8') as file:
+            for line in content:
+                file.write(line)
+    sequence = get_colour_seq(file_in, colours, visualize, file_out)
     if sequence == "The colouring is imposible.":
         print(sequence)
     else:
+        sequence, verts = sequence[0], sequence[1]
         with open(file_out, "w+", encoding='utf-8') as file, \
         open(file_in, 'r', encoding='utf-8') as f:
-            num = 0
             for line in f.readlines()[:-1]:
                 file.write(line)
-                for i in line.split():
-                    if i.isnumeric():
-                        num = max(num, int(i))
-            for i in range(num):
-                file.write(f'\t{i+1} [shape = circle style = filled \
+            for i, ver in enumerate(verts):
+                file.write(f'\t{ver} [shape = circle style = filled \
 color="{sequence.split()[i]}"]\n')
             file.write("}")
+# write_colour("graph.dot", "coloured.dot", ["red", "blue", "green"], True)
 
 def bipartite_graph_check(graph: list[tuple] | list[set])-> bool:
     """
