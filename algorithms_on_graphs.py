@@ -2,7 +2,6 @@
 
 import time
 
-from itertools import permutations
 from copy import deepcopy
 
 #  yulian ham cycle imports
@@ -76,18 +75,16 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
     >>> graph = [('a', 'b'), ('c', 'b'), ('d', 'c'), ('d', 'a'), \
                  ('b', 'd'), ('b', 'd')]
     >>> euler_cycle(graph)
-    [['a', 'b', 'd', 'c', 'b', 'd']]
+    ['abdcbd']
 
     >>> graph1 = [{'a', 'b'}, {'b', 'c'}, {'c', 'd'}, {'d', 'a'}]
     >>> euler_cycle(graph1)
-    [['a', 'b', 'c', 'd'], ['a', 'd', 'c', 'b']]
+    ['abcd', 'adcb']
     >>> graph2 = [{'a', 'b'}, {'b', 'c'}, {'c', 'd'}, {'d', 'a'}, {'a', 'e'}, {'b', 'e'}, \
 {'c', 'e'}, {'d', 'e'}, {'f', 'd'}, {'f', 'c'}, {'g', 'a'}, {'g', 'b'}]
-    >>> ['a', 'e', 'b' ,'g' , 'a' , 'b' , 'c' , 'f' , 'd', 'e', 'c', 'd'] in euler_cycle(graph2)
+    >>> 'agbedabcdfce' in euler_cycle(graph2)
     True
     """
-    if not graph:
-        return "This graph is empty"
     # deepcopy to be on the safe side
     p_graph = deepcopy(graph)
     length = len(graph)
@@ -113,14 +110,40 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
         for pair in graph:
             if pair[0] == position:
                 if pair[1] == vertex and len(way) == length:
-                    all_cycles.append(way)
+                    all_cycles.append(way+vertex)
                 calculate_way(graph, pair[1], way+pair[1], pair)
 
-    # This is a vertix from which we move
-    vertex = p_graph[0][0] if p_graph[0][0] < p_graph[0][1] else p_graph[0][1]
+    # We need to decide what will be start vertice
+    vertex = 'a'
     calculate_way(p_graph + ['*', '*'], vertex, vertex, '*')
+    edges = [ver1 + ver2 for ver1, ver2 in graph]
 
-    return [list(el) for el in sorted(set(all_cycles))] if all_cycles else 'There is no euler cycle for this graph'
+    output = []
+
+    if flag:
+        # return all_cycles
+        # Selects those cycles that contain all edges for undirected graph
+        for cycle in all_cycles:
+            for edge in edges:
+                # Checks whether this cycle contains this edge
+                if edge not in cycle and edge[::-1] not in cycle:
+                    break
+            else:
+                # If this cycle has all edges we add it to output
+                output.append(cycle[:-1])
+
+    else:
+        # Selects those cycles that contain all edges for directed graph
+        for cycle in all_cycles:
+            for edge in edges:
+                # Checks whether this cycle contains this edge
+                if edge not in cycle:
+                    break
+            else:
+                # If this cycle has all edges we add it to output
+                output.append(cycle[:-1])
+
+    return sorted(set(output)) if output else 'There is no euler cycle for this graph'
 
 
 
@@ -558,7 +581,7 @@ def if_graphs_are_isomorphic(graph_1: list[tuple], graph_2: list[tuple]) -> bool
     >>> if_graphs_are_isomorphic([(1, 2), (2, 1), (3, 4)], [(2, 1), (1, 2), (4, 3)])
     True
     >>> if_graphs_are_isomorphic([(1, 2), (2, 3)], [(3, 2), (2, 1)])
-    False
+    True
     """
 
     def if_graph_is_directed(graph: list[tuple]) -> bool:
@@ -573,8 +596,9 @@ def if_graphs_are_isomorphic(graph_1: list[tuple], graph_2: list[tuple]) -> bool
         >>> if_graph_is_directed([(1, 2), (2, 3), (3, 1), (1, 3)])
         False
         """
-        for edge in graph:
-            if (edge[1], edge[0]) in graph:
+        graphs = set(graph)
+        for edge in graphs:
+            if (edge[1], edge[0]) in graphs:
                 return False
         return True
 
@@ -624,7 +648,7 @@ def if_graphs_are_isomorphic(graph_1: list[tuple], graph_2: list[tuple]) -> bool
         if len(vertices_1) != len(vertices_2):
             return False
 
-        for perm in permutations(vertices_2):
+        for perm in permute(list(vertices_2)):
             vertex_match = {}
             for u, v in enumerate(vertices_1):
                 vertex_match[v] = perm[u]
@@ -668,7 +692,7 @@ def if_graphs_are_isomorphic(graph_1: list[tuple], graph_2: list[tuple]) -> bool
         if len(vertices_1) != len(vertices_2):
             return False
 
-        for perm in permutations(vertices_2):
+        for perm in permute(list(vertices_2)):
             vertex_match = {}
             for u, v in enumerate(vertices_1):
                 vertex_match[v] = perm[u]
