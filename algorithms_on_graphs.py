@@ -386,7 +386,7 @@ def tkinter_window():
 
     input_box.bind("<Return>", on_enter)
 
-root.mainloop()
+    root.mainloop()
 
 #pylint: enable=all
 
