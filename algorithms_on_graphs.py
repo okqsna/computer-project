@@ -36,7 +36,11 @@ def readfile(file_name: str, extra_list = False) -> list[tuple] | list[set]:
                     i += 1
         verts_list = sorted(list(verts_set))
         res1 = [(verts_list.index(i[0]) + 1, verts_list.index(i[1]) + 1) for i in res]
-        res2 = [set(i) for i in res1]
+        res2 = []
+        # edgecase check 
+        for i in res1:
+            if set(i) not in res2:
+                res2.append(set(i))
         if extra_list is True:
             return [res1, verts_list] if spl == "->" else [res2, verts_list]
         return res1 if spl == "->" else res2
@@ -566,6 +570,8 @@ def bipartite_graph_check(graph: list[tuple] | list[set])-> bool:
     >>> bipartite_graph_check(graph)
     True
     """
+    if not graph:
+        return "This graph is empty"
 
     def get_neighbouring_values(graph: list[tuple]) -> dict:
         """
