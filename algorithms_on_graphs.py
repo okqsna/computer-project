@@ -639,41 +639,6 @@ def if_graphs_are_isomorphic(graph_1: list[tuple], graph_2: list[tuple]) -> bool
     True
     """
 
-    def if_graph_is_directed(graph: list[tuple]) -> bool:
-        """
-        Checks if graph is directed
-    
-        :param graph: a list of edges, where each edge is a tuple (start, end) representing an undirected edge between 'start' and 'end'.
-        :return: bool, True if the graph is directed, False if it is undirected.
-    
-        >>> if_graph_is_directed([(1, 2), (2, 3), (3, 1), (4, 5)])
-        True
-        >>> if_graph_is_directed([(1, 2), (2, 3), (3, 1), (1, 3)])
-        False
-        """
-        for line in graph:
-            if isintance(line, tuple):
-                return True
-            return False
-
-
-    def if_graph_is_undirected(graph: list[tuple]) -> bool:
-        """
-        Checks if graph is undirected
-    
-        :param graph: a list of edges, where each edge is a tuple (start, end) representing an undirected edge between 'start' and 'end'.
-        :return: bool, True if the graph is undirected, False if it is directed.
-    
-        >>> if_graph_is_directed([(1, 2), (2, 3), (3, 1), (4, 5)])
-        False
-        >>> if_graph_is_directed([(1, 2), (2, 3), (3, 1), (1, 3)])
-        True
-        """
-        for line in graph:
-            if isintance(line, set):
-                return False
-            return True
-
     def directed_isomorphism(graph_1: list[tuple], graph_2: list[tuple]) -> bool:
         """Checks if directed graphs are isomorphic
     
@@ -761,22 +726,15 @@ def if_graphs_are_isomorphic(graph_1: list[tuple], graph_2: list[tuple]) -> bool
 
         return False
 
-
-    directed_graph_1 = if_graph_is_directed(graph_1)
-    directed_graph_2 = if_graph_is_directed(graph_2)
-    undirected_graph_1 = if_graph_is_undirected(graph_1)
-    undirected_graph_2 = if_graph_is_undirected(graph_2)
-
-    if directed_graph_1 != directed_graph_2:
-        return False
-    if undirected_graph_1 != undirected_graph_2:
+    if isinstance(graph_1[0], tuple) == isinstance(graph_2[0], tuple):
+         if isinstance(graph_1[0], tuple) is True:
+             return directed_isomorphism(graph_1, graph_2)
+        else:
+            return undirected_isomorphism(graph_1, graph_2)
+    else:
         return False
 
-    if directed_graph_1 == directed_graph_2:
-        return directed_isomorphism(graph_1, graph_2)
-    if undirected_graph_1 == undirected_graph_2:
-        return undirected_isomorphism(graph_1, graph_2)
-
+   
 
 if __name__ == "__main__":
     import doctest
