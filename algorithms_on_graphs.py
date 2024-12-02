@@ -651,11 +651,10 @@ def if_graphs_are_isomorphic(graph_1: list[tuple], graph_2: list[tuple]) -> bool
         >>> if_graph_is_directed([(1, 2), (2, 3), (3, 1), (1, 3)])
         False
         """
-        graphs = set(graph)
-        for edge in graphs:
-            if (edge[1], edge[0]) in graphs:
-                return False
-        return True
+        for line in graph:
+            if isintance(line, tuple):
+                return True
+            return False
 
 
     def if_graph_is_undirected(graph: list[tuple]) -> bool:
@@ -670,10 +669,10 @@ def if_graphs_are_isomorphic(graph_1: list[tuple], graph_2: list[tuple]) -> bool
         >>> if_graph_is_directed([(1, 2), (2, 3), (3, 1), (1, 3)])
         True
         """
-        for edge in graph:
-            if (edge[1], edge[0]) in graph:
-                return True
-        return False
+        for line in graph:
+            if isintance(line, set):
+                return False
+            return True
 
     def directed_isomorphism(graph_1: list[tuple], graph_2: list[tuple]) -> bool:
         """Checks if directed graphs are isomorphic
