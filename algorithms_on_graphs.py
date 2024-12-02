@@ -106,7 +106,7 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
             ver1, ver2 = edge
             p_graph.extend([(ver1, ver2), (ver2, ver1)])
     else:
-        p_graph = deepcopy(graph)
+        p_graph = graph.copy()
         for ver1, ver2 in graph:
             if (ver2, ver1) not in graph:
                 return "This graph isn't strongly connected"
