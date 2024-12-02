@@ -149,8 +149,16 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
 
 
 
+import tkinter as tk
+from tkinter.scrolledtext import ScrolledText
+import ast
+
 def permute(nodes):
-    """Generate all permutations of the given list."""
+    """
+    Generate all permutations of the given list.
+    >>> permute([1,2,3])
+    [[1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]]
+    """
     if len(nodes) == 1:
         return [nodes]
 
@@ -174,7 +182,7 @@ def check_for_ham(graph: list[tuple]) -> list | str:
     is the vertice, and the second is the connection
 
     :return: returns either a list of the vertices of the hamiltonian
-    cycle, or says that it does not exist
+    cycle, or says that it does nto exist
 
     # UNORIENTED
     >>> g = [{1, 2}, {2, 3}, {3, 1}]
@@ -278,6 +286,9 @@ def check_for_ham(graph: list[tuple]) -> list | str:
 #pylint: disable=all
 
 def parse_input(text):
+    """
+    Changes string text into actual data
+    """
     try:
         return ast.literal_eval(text)
     except Exception as e:
@@ -285,6 +296,9 @@ def parse_input(text):
 
 # display of results
 def display_results(permutations, correct_path, indx=0):
+    """
+    Displays the results of the calculations in the scrollable text box
+    """
     output_box.tag_configure("green_text", foreground="green")
 
     # When all results are displayed
@@ -312,23 +326,14 @@ def display_results(permutations, correct_path, indx=0):
     root.after(50, lambda: display_results(permutations, correct_path, indx + 1))
 
 
-# Tkinter window setup
-root = tk.Tk()
-root.title("Hamiltonian Cycle Checker")
-root.geometry("800x1000")
 
-font_style = ("Arial", 14)
-label = tk.Label(root, text="Enter graph vertices as a list of sets or tuples (for example: [(1, 2), (2, 3), (3, 1)]):", font=font_style)
-label.pack(pady=10)
-
-input_box = tk.Entry(root, font=("Arial", 14), width=80)
-input_box.pack(pady=10)
-
-output_box = ScrolledText(root, font=("Arial", 12), width=90, height=50, state='normal')
-output_box.pack(pady=10)
 
 
 def on_enter(event):
+    """
+    Defines what has to be done when enter is pressed in the main text box,
+    in this case call the deploy_results function
+    """
     input_text = input_box.get()
     input_box.delete(0, tk.END)
     graph = parse_input(input_text)
@@ -356,8 +361,28 @@ def on_enter(event):
         output_box.insert(tk.END, "Invalid input format. Please try again.\n")
     output_box.see(tk.END)
 
+root = tk.Tk()
 
-input_box.bind("<Return>", on_enter)
+def tkinter_window():
+
+    # Tkinter window setup
+
+    root.title("Hamiltonian Cycle Checker")
+    root.geometry("800x1000")
+
+    font_style = ("Arial", 14)
+    label = tk.Label(root, text="Enter graph vertices as a list of sets or tuples (for example: [(1, 2), (2, 3), (3, 1)]):", font=font_style)
+    label.pack(pady=10)
+
+    global input_box
+    input_box = tk.Entry(root, font=("Arial", 14), width=80)
+    input_box.pack(pady=10)
+
+    global output_box
+    output_box = ScrolledText(root, font=("Arial", 12), width=90, height=50, state='normal')
+    output_box.pack(pady=10)
+
+    input_box.bind("<Return>", on_enter)
 
 root.mainloop()
 
