@@ -12,6 +12,7 @@ ALGORITHMS = {
     'isomorphic-graph-check': ('Checks if two graphs are isomorphic.',\
 lib.if_graphs_are_isomorphic),
     'coloring-graphs': ('Colors the graph using the provided colors.', lib.write_colour),
+    'hamiltonian-visualization': ('Visualize the search of Hamiltonian path', lib.tkinter_window)
 }
 
 def main():
@@ -50,11 +51,11 @@ Use the --add-file option.")
                 return
             colors = [int(c) for c in args.colors.split(",")]
             result = alg(args.file, args.file_out, colors)
-
+        elif args.algorithm == 'hamiltonian-visualization':
+            result = alg()
         else:
             result = alg(graph)
-
-        print(f'Result of an algorithm: {result}')
+            print(f'Result of an algorithm: {result}')
     else:
         print(f"Unknown algorithm '{args.algorithm}'. Choose from the available options:")
         for name, (desc, _) in ALGORITHMS.items():

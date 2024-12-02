@@ -2,7 +2,6 @@
 
 import time
 
-from itertools import permutations
 from copy import deepcopy
 
 #  yulian ham cycle imports
@@ -10,13 +9,15 @@ import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 import ast
 
-def readfile(file_name: str, extra_list = False) -> list[tuple]:
+def readfile(file_name: str, extra_list = False) -> list[tuple] | list[set]:
     """
     The function reads the file .dot and makes 
     the list of tuples of neighbour vertices.
 
     :param file_name: str, the name of the file.
-    :return: list[tuple], the list for graph.
+    :return: list[tuple] | list[set], the list for graph.
+    list of tuples for directed graph.
+    list of sets for not directed graph.
     """
     with open(file_name, 'r', encoding='utf-8') as file:
         first = file.readline()
@@ -142,8 +143,16 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
     return [list(el) for el in sorted(output)] if output else 'There is no euler cycle for this graph'
 
 
+import tkinter as tk
+from tkinter.scrolledtext import ScrolledText
+import ast
+
 def permute(nodes):
-    """Generate all permutations of the given list."""
+    """
+    Generate all permutations of the given list.
+    >>> permute([1,2,3])
+    [[1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]]
+    """
     if len(nodes) == 1:
         return [nodes]
 
@@ -167,7 +176,7 @@ def check_for_ham(graph: list[tuple]) -> list | str:
     is the vertice, and the second is the connection
 
     :return: returns either a list of the vertices of the hamiltonian
-    cycle, or says that it does not exist
+    cycle, or says that it does nto exist
 
     # UNORIENTED
     >>> g = [{1, 2}, {2, 3}, {3, 1}]
@@ -271,6 +280,9 @@ def check_for_ham(graph: list[tuple]) -> list | str:
 #pylint: disable=all
 
 def parse_input(text):
+    """
+    Changes string text into actual data
+    """
     try:
         return ast.literal_eval(text)
     except Exception as e:
@@ -278,6 +290,9 @@ def parse_input(text):
 
 # display of results
 def display_results(permutations, correct_path, indx=0):
+    """
+    Displays the results of the calculations in the scrollable text box
+    """
     output_box.tag_configure("green_text", foreground="green")
 
     # When all results are displayed
@@ -305,23 +320,14 @@ def display_results(permutations, correct_path, indx=0):
     root.after(50, lambda: display_results(permutations, correct_path, indx + 1))
 
 
-# Tkinter window setup
-root = tk.Tk()
-root.title("Hamiltonian Cycle Checker")
-root.geometry("800x1000")
 
-font_style = ("Arial", 14)
-label = tk.Label(root, text="Enter graph vertices as a list of sets or tuples (for example: [(1, 2), (2, 3), (3, 1)]):", font=font_style)
-label.pack(pady=10)
-
-input_box = tk.Entry(root, font=("Arial", 14), width=80)
-input_box.pack(pady=10)
-
-output_box = ScrolledText(root, font=("Arial", 12), width=90, height=50, state='normal')
-output_box.pack(pady=10)
 
 
 def on_enter(event):
+    """
+    Defines what has to be done when enter is pressed in the main text box,
+    in this case call the deploy_results function
+    """
     input_text = input_box.get()
     input_box.delete(0, tk.END)
     graph = parse_input(input_text)
@@ -349,10 +355,31 @@ def on_enter(event):
         output_box.insert(tk.END, "Invalid input format. Please try again.\n")
     output_box.see(tk.END)
 
+def tkinter_window():
 
-input_box.bind("<Return>", on_enter)
+    global root
+    root = tk.Tk()
 
-root.mainloop()
+    # Tkinter window setup
+
+    root.title("Hamiltonian Cycle Checker")
+    root.geometry("800x1000")
+
+    font_style = ("Arial", 14)
+    label = tk.Label(root, text="Enter graph vertices as a list of sets or tuples (for example: [(1, 2), (2, 3), (3, 1)]):", font=font_style)
+    label.pack(pady=10)
+
+    global input_box
+    input_box = tk.Entry(root, font=("Arial", 14), width=80)
+    input_box.pack(pady=10)
+
+    global output_box
+    output_box = ScrolledText(root, font=("Arial", 12), width=90, height=50, state='normal')
+    output_box.pack(pady=10)
+
+    input_box.bind("<Return>", on_enter)
+
+    root.mainloop()
 
 #pylint: enable=all
 
@@ -404,6 +431,17 @@ def approp(cur: int, graph: list[list[int]], colours: list[int], colour: int) ->
     return True
 
 def visualizing(file_name: str, cur: int, colour: int, st_col: list[str], ver_list: list[str]) -> None:
+    """
+    The function helps visualize the algorithm's work. It writes the file every time the colour is being checked
+    adding for the output file the line with new description(colour). The file exists from the very begining and 
+    from the begining obtains the same information the input file has.
+
+    :param file_name: str, the output file.
+    :param cur: int, the number of the vertice.
+    :param colour: int, the number of the colour.
+    :param st_col: list[str], the input list with colour names.
+    :param ver_list: list[str], the initial list of vertices names.
+    """
     content = []
     time.sleep(0.89)
     with open(file_name, "r", encoding="utf-8") as file:
@@ -423,7 +461,11 @@ def colouring(graph: list[list[int]], s: int, colours: list[int], st_col: list[s
     :param graph: list[list[int]], the matrix of the graph.
     :param s: int, the number of vetices.
     :param colours: list[int], the list with colours' numbers assigned to each vertice.
+    :param st_col: list[str], the input list with colour names.
     :param cur: int, the number of curren vertice.
+    :param visualize: bool, wheather the visualisation is needed.
+    :param file_out: str, the output file.
+    :param ver_list: list[str], the initial list of vertices names.
     :return: bool(False if we can't color the graph) or the changed list colours.
     """
     if cur == s:
@@ -444,7 +486,9 @@ def get_colour_seq(file_name: str, colour_list: list[str], visualize: bool, file
     The function returns the result of colouring and the text if not possible.
 
     :param file_name: str, the name of .dot file.
-    :param colour_list: list[str], the chosen numbers (only 3).
+    :param colour_list: list[str], the chosen colours' names (only 3).
+    :param visualize: bool, wheather the visualisation is needed.
+    :param file_out: str, the output file.
     :return: str, the colour sequence in string with white spaces.
     """
     rel = readfile(file_name, True)
@@ -464,7 +508,8 @@ def write_colour(file_in: str, file_out: str, colours: list[str], visualize = Fa
 
     :param file_in: str, the name of input .dot file.
     :param file_out: str, the name of output .dot file.
-    :param colours: str, the chosen numbers (only 3).
+    :param colours: str, the chosen colours' names (only 3).
+    :param visualize: bool, wheather the visualisation is needed.
     :return: None
     """
     if visualize is True:
@@ -504,10 +549,22 @@ def bipartite_graph_check(graph: list[tuple] | list[set])-> bool:
     :return: bool, function returns True if graph is bipartite, 
     returns False when it is not.
 
-    >>> graph = [{1, 2}, {0, 2}, {0, 1}] # непарний цикл
+    >>> graph = [{'a', 'b'}, {'b', 'c'}, {'c', 'e'}, {'c', 'd'}, {'a', 'd'}, {'a', 'e'}]
     >>> bipartite_graph_check(graph)
+    True
+    >>> graph = [{'a', 'b'}, {'a', 'c'}, {'a', 'd'}, {'b', 'c'}, {'b', 'd'}, {'c', 'd'}]
+    >>> bipartite_graph_check(graph) # example for complete graph with more than 2 vertices
     False
-    >>> graph = [(0, 1), (1, 2), (2, 3), (3, 0)] # простий граф з парним циклом
+    >>> graph = [{'a', 'b'}, {'b', 'c'}, {'c', 'd'}, {'d', 'e'}, {'e', 'a'}]
+    >>> bipartite_graph_check(graph) # example for cycle graph with odd number of vertices
+    False
+    >>> graph = [{1, 2}, {2, 3}, {3, 1}, {1, 4}, {2, 4}, {3, 4}]
+    >>> bipartite_graph_check(graph) # example for wheel graph
+    False
+    >>> graph = [{'01', '11'}, {'11', '10'}, {'10', '00'}]
+    >>> bipartite_graph_check(graph) # example for hypercube graph
+    True
+    >>> graph = [('a', 'x'), ('a', 'y'), ('b', 'x')]
     >>> bipartite_graph_check(graph)
     True
     """
@@ -575,7 +632,7 @@ def if_graphs_are_isomorphic(graph_1: list[tuple], graph_2: list[tuple]) -> bool
     >>> if_graphs_are_isomorphic([(1, 2), (2, 1), (3, 4)], [(2, 1), (1, 2), (4, 3)])
     True
     >>> if_graphs_are_isomorphic([(1, 2), (2, 3)], [(3, 2), (2, 1)])
-    False
+    True
     """
 
     def if_graph_is_directed(graph: list[tuple]) -> bool:
@@ -590,8 +647,9 @@ def if_graphs_are_isomorphic(graph_1: list[tuple], graph_2: list[tuple]) -> bool
         >>> if_graph_is_directed([(1, 2), (2, 3), (3, 1), (1, 3)])
         False
         """
-        for edge in graph:
-            if (edge[1], edge[0]) in graph:
+        graphs = set(graph)
+        for edge in graphs:
+            if (edge[1], edge[0]) in graphs:
                 return False
         return True
 
@@ -641,7 +699,7 @@ def if_graphs_are_isomorphic(graph_1: list[tuple], graph_2: list[tuple]) -> bool
         if len(vertices_1) != len(vertices_2):
             return False
 
-        for perm in permutations(vertices_2):
+        for perm in permute(list(vertices_2)):
             vertex_match = {}
             for u, v in enumerate(vertices_1):
                 vertex_match[v] = perm[u]
@@ -685,7 +743,7 @@ def if_graphs_are_isomorphic(graph_1: list[tuple], graph_2: list[tuple]) -> bool
         if len(vertices_1) != len(vertices_2):
             return False
 
-        for perm in permutations(vertices_2):
+        for perm in permute(list(vertices_2)):
             vertex_match = {}
             for u, v in enumerate(vertices_1):
                 vertex_match[v] = perm[u]
