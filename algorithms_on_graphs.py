@@ -7,7 +7,7 @@ import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 import ast
 
-def readfile(file_name: str, extra_list = False) -> list[tuple] | list[set]:
+def read_file(file_name: str, extra_list = False) -> list[tuple] | list[set]:
     """
     The function reads the file .dot and makes 
     the list of tuples of neighbour vertices.
@@ -142,12 +142,9 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
         if 'a' + cycle[1:][::-1] not in output and cycle not in output:
             output.append(cycle)
 
-    return [list(el) for el in sorted(output)] if output else 'There is no euler cycle for this graph'
+    return [list(el) for el in sorted(output)] if output else 'There is no Euler cycle for this graph'
 
 
-import tkinter as tk
-from tkinter.scrolledtext import ScrolledText
-import ast
 
 def permute(nodes):
     """
@@ -224,7 +221,7 @@ def check_for_ham(graph: list[tuple]) -> list | str:
     """
 
     if len(graph) < 3:
-        return "To have a Hamiltonian graph you need at least 3 vertices!"
+        return "To have a Hamiltonian graph you need at least 3 edges!"
 
     # Check what type of graph
     unoriented = None
@@ -493,7 +490,7 @@ def get_colour_seq(file_name: str, colour_list: list[str], visualize: bool, file
     :param file_out: str, the output file.
     :return: str, the colour sequence in string with white spaces.
     """
-    rel = readfile(file_name, True)
+    rel = read_file(file_name, True)
     matrix = to_symetric(to_matrix(rel[0]))
     s = len(matrix)
     chosen_colours = [0]*s
@@ -727,14 +724,13 @@ def if_graphs_are_isomorphic(graph_1: list[tuple], graph_2: list[tuple]) -> bool
         return False
 
     if isinstance(graph_1[0], tuple) == isinstance(graph_2[0], tuple):
-         if isinstance(graph_1[0], tuple) is True:
+        if isinstance(graph_1[0], tuple) is True:
              return directed_isomorphism(graph_1, graph_2)
         else:
             return undirected_isomorphism(graph_1, graph_2)
     else:
         return False
 
-   
 
 if __name__ == "__main__":
     import doctest
