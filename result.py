@@ -8,8 +8,8 @@ import algorithms_on_graphs as lib
 ALGORITHMS = {
     'euler-cycle': ('Performs the Euler cycle algorithm on a graph.', lib.euler_cycle),
     'hamiltonian-cycle': ('Checks whether the graph has Hamiltonian cycle.', lib.check_for_ham),
-    'bipartite-graph-check': ('Checks whether the graph is bipartite.', lib.bipartite_graph_check),
-    'isomorphic-graph-check': ('Checks if two graphs are isomorphic.',\
+    'bipartite-graph': ('Checks whether the graph is bipartite.', lib.bipartite_graph_check),
+    'isomorphic-graphs': ('Checks if two graphs are isomorphic.',\
 lib.if_graphs_are_isomorphic),
     'coloring-graphs': ('Colors the graph using the provided colors.', lib.write_colour),
     'hamiltonian-visualization': ('Visualize the search of Hamiltonian path', lib.tkinter_window)
@@ -37,19 +37,20 @@ an additional graph (required for isomorphism checking).')
         description, alg = ALGORITHMS[args.algorithm]
         print(f"Description of the algorithm: {description}")
 
-        graph = lib.readfile(args.file)
-        if args.algorithm == 'isomorphic-graph-check':
+        graph = lib.read_file(args.file)
+        if args.algorithm == 'isomorphic-graphs':
             if not args.add_file:
-                print("'isomorphic-graph-check' requires an additional file.\
+                print("'isomorphic-graphs' requires an additional file.\
 Use the --add-file option.")
                 return
-            graph_add = lib.readfile(args.add_file)
+            graph_add = lib.read_file(args.add_file)
             result = alg(graph, graph_add)
+            print(f'Result of an algorithm: {result}')
         elif args.algorithm == 'coloring-graphs':
             if not args.file_out or not args.colors:
                 print("'coloring-graphs' requires --file-out and --colors options.")
                 return
-            colors = [int(c) for c in args.colors.split(",")]
+            colors = [c for c in args.colors.split(",")]
             result = alg(args.file, args.file_out, colors)
         elif args.algorithm == 'hamiltonian-visualization':
             result = alg()
