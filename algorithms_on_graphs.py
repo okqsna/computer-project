@@ -362,9 +362,10 @@ def on_enter(event):
         output_box.insert(tk.END, "Invalid input format. Please try again.\n")
     output_box.see(tk.END)
 
-root = tk.Tk()
-
 def tkinter_window():
+
+    global root
+    root = tk.Tk()
 
     # Tkinter window setup
 
