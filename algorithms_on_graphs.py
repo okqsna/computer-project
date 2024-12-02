@@ -2,8 +2,6 @@
 
 import time
 
-from copy import deepcopy
-
 #  yulian ham cycle imports
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
@@ -122,7 +120,7 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
         Takes a graph and current position. Check where you can go from your current position
         and creates all these possible ways.
         """
-        graph = deepcopy(graph)
+        graph = graph.copy()
         graph.remove(r_p)
         graph.remove(r_p[::-1])
         for pair in graph:
