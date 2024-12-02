@@ -109,7 +109,40 @@
 
 <hr>
 
+### Інсталяція
+1. Склонуйте цей репозиторій
+```
+git clone https://github.com/okqsna/computer-project.git
+```
+2. Перевірте чи встановлений у вас ```Python 3.12``` та такі модулі: ```tkinter```, ```ast```, ```argparse```.
+3. Для інтерактивного виводу з ```argparse``` введіть у термінал такі команди:
+- для пошуку Ейлерового циклу
+```
+python3 result.py example.dot euler-cycle
+```
+- для пошуку Гамільтонового циклу
+```
+python3 result.py example.dot hamiltonian-cycle
+```
+- для візуалізації пошуку Гамільтонового циклу
+```
+python3 result.py example.dot hamiltonian-visualization
+```
+- для розфарбовування зв'язних графів у 3 кольори
+```
+python3 result.py example.dot coloring-graphs --file-out example_out.dot --colors red,yellow,blue
+```
+- для перевірки на двочастковість графа
+```
+python3 result.py example.dot bipartite-graph
+```
+- для перевірки на ізоморфність двох графів
+```
+python3 result.py example_1.dot isomorphic-graphs --add-file example_2.dot
+```
 
+
+<hr>
 
 #### Розподіл обов'язків
 Під час роботи над цим комп'ютерним проєктом ми розприділили функції по одній для кожного, проте ми допомогали один одному, підказували, як можна покращити нашу бібліотеку та постійно вели комунікацію про це в команді.
