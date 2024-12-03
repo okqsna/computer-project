@@ -102,19 +102,15 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
     """
     if not graph:
         return "This graph is empty"
+    # deepcopy to be on the safe side
+    p_graph = graph.copy()
+    length = len(graph)
 
-    if isinstance(graph[0], set):
-        length = len(graph)
+    if flag := isinstance(graph[0], set):
         p_graph = []
         for edge in graph:
             ver1, ver2 = edge
             p_graph.extend([(ver1, ver2), (ver2, ver1)])
-    else:
-        p_graph = graph.copy()
-        for ver1, ver2 in graph:
-            if (ver2, ver1) not in graph:
-                return "This graph isn't strongly connected"
-        length = len(graph) / 2
 
     # calculate_way writes all possible cycles here
     all_cycles = []
@@ -126,7 +122,8 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
         """
         graph = graph.copy()
         graph.remove(r_p)
-        graph.remove(r_p[::-1])
+        if flag:
+            graph.remove(r_p[::-1])
         for pair in graph:
             if pair[0] == position:
                 if pair[1] == vertex and len(way) == length:
@@ -137,12 +134,7 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
     vertex = p_graph[0][0] if p_graph[0][0] < p_graph[0][1] else p_graph[0][1]
     calculate_way(p_graph + ['*', '*'], vertex, vertex, '*')
 
-    output = []
-    for cycle in all_cycles:
-        if 'a' + cycle[1:][::-1] not in output and cycle not in output:
-            output.append(cycle)
-
-    return [list(el) for el in sorted(output)] if output else 'There is no Euler cycle for this graph'
+    return [list(el) for el in sorted(set(all_cycles))] if all_cycles else 'There is no euler cycle for this graph'
 
 
 
