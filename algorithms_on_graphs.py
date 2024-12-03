@@ -495,6 +495,8 @@ def get_colour_seq(file_name: str, colour_list: list[str], visualize: bool, file
         result = " ".join(map(lambda x: colour_list[x-1], chosen_colours))
     else:
         result = "The colouring is imposible."
+    if s < 3:
+        result =  f"The colouring is imposible."
     return [result, rel[1]]
 
 def write_colour(file_in: str, file_out: str, colours: list[str], visualize = False) -> None:
@@ -527,7 +529,6 @@ def write_colour(file_in: str, file_out: str, colours: list[str], visualize = Fa
                 file.write(f'\t{ver} [shape = circle style = filled \
 color="{sequence.split()[i]}"]\n')
             file.write("}")
-# write_colour("graph.dot", "coloured.dot", ["red", "blue", "green"], True)
 
 def bipartite_graph_check(graph: list[tuple] | list[set])-> bool:
     """
