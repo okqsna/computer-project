@@ -79,17 +79,17 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
     >>> graph = [('a', 'b'), ('c', 'b'), ('d', 'c'), ('d', 'a'), \
                  ('b', 'd'), ('b', 'd')]
     >>> euler_cycle(graph)
-    "This graph isn't strongly connected"
+    [['a', 'b', 'd', 'c', 'b', 'd']]
 
-    >>> graph1 = [('a', 'b'), ('b', 'a'), ('c', 'd'), ('d', 'c'), \
-                 ('a', 'd'), ('d', 'a'), ('b', 'd'), ('d', 'b')]
+    >>> graph1 = [('a', 'b'), ('c', 'd'), \
+                 ('d', 'a'), ('b', 'd')]
     >>> euler_cycle(graph1)
     'There is no Euler cycle for this graph'
 
-    >>> graph2 = [('a', 'b'), ('b', 'a'), ('b', 'c'), ('c', 'b'), ('c', 'a'), ('a', 'c'), \
-                 ('c', 'd'), ('d', 'c'), ('d', 'e'), ('e', 'd'), ('e', 'c'), ('c', 'e')]
+    >>> graph2 = [('a', 'b'), ('b', 'c'), ('c', 'a'), \
+                 ('c', 'd'), ('d', 'e'), ('e', 'c')]
     >>> euler_cycle(graph2)
-    [['a', 'b', 'c', 'd', 'e', 'c'], ['a', 'b', 'c', 'e', 'd', 'c']]
+    [['a', 'b', 'c', 'd', 'e', 'c']]
 
     >>> graph3 = [{'a', 'b'}, {'b', 'c'}, {'c', 'd'}, {'d', 'a'}]
     >>> euler_cycle(graph3)
@@ -102,19 +102,15 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
     """
     if not graph:
         return "This graph is empty"
+    # deepcopy to be on the safe side
+    p_graph = graph.copy()
+    length = len(graph)
 
-    if isinstance(graph[0], set):
-        length = len(graph)
+    if flag := isinstance(graph[0], set):
         p_graph = []
         for edge in graph:
             ver1, ver2 = edge
             p_graph.extend([(ver1, ver2), (ver2, ver1)])
-    else:
-        p_graph = graph.copy()
-        for ver1, ver2 in graph:
-            if (ver2, ver1) not in graph:
-                return "This graph isn't strongly connected"
-        length = len(graph) / 2
 
     # calculate_way writes all possible cycles here
     all_cycles = []
@@ -126,7 +122,8 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
         """
         graph = graph.copy()
         graph.remove(r_p)
-        graph.remove(r_p[::-1])
+        if flag:
+            graph.remove(r_p[::-1])
         for pair in graph:
             if pair[0] == position:
                 if pair[1] == vertex and len(way) == length:
@@ -134,7 +131,7 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
                 calculate_way(graph, pair[1], way+pair[1], pair)
 
     # This is a vertix from which we move
-    vertex = p_graph[0][0] if p_graph[0][0] < p_graph[0][1] else p_graph[0][1]
+    vertex = min(p_graph[0])
     calculate_way(p_graph + ['*', '*'], vertex, vertex, '*')
 
     output = []
@@ -143,7 +140,6 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
             output.append(cycle)
 
     return [list(el) for el in sorted(output)] if output else 'There is no Euler cycle for this graph'
-
 
 
 def permute(nodes):
