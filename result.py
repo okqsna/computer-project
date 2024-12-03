@@ -29,6 +29,7 @@ an additional graph (required for isomorphism checking).')
 (required for coloring only).', type = str)
     parser.add_argument('--colors', help = 'List of colors for graph coloring\
 (required for coloring only).', type = str)
+    parser.add_argument('--visualization-for-coloring', help = 'Parameter for coloring graph in 3 colours', type = bool)
 
     args = parser.parse_args()
 
@@ -48,10 +49,11 @@ Use the --add-file option.")
             print(f'Result of an algorithm: {result}')
         elif args.algorithm == 'coloring-graphs':
             if not args.file_out or not args.colors:
-                print("'coloring-graphs' requires --file-out and --colors options.")
+                print("'coloring-graphs' requires --file-out,\
+--colors options(ex. red,yellow,blue) and paremeter for visualizing the coloring")
                 return
             colors = [c for c in args.colors.split(",")]
-            result = alg(args.file, args.file_out, colors)
+            result = alg(args.file, args.file_out, colors, args.visualization_for_coloring)
         elif args.algorithm == 'hamiltonian-visualization':
             result = alg()
         else:
