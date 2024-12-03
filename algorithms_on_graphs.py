@@ -84,7 +84,7 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
     >>> graph1 = [('a', 'b'), ('b', 'a'), ('c', 'd'), ('d', 'c'), \
                  ('a', 'd'), ('d', 'a'), ('b', 'd'), ('d', 'b')]
     >>> euler_cycle(graph1)
-    'There is no euler cycle for this graph'
+    'There is no Euler cycle for this graph'
 
     >>> graph2 = [('a', 'b'), ('b', 'a'), ('b', 'c'), ('c', 'b'), ('c', 'a'), ('a', 'c'), \
                  ('c', 'd'), ('d', 'c'), ('d', 'e'), ('e', 'd'), ('e', 'c'), ('c', 'e')]
