@@ -106,7 +106,8 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
     p_graph = graph.copy()
     length = len(graph)
 
-    if flag := isinstance(graph[0], set):
+    flag = isinstance(graph[0], set)
+    if flag:
         p_graph = []
         for edge in graph:
             ver1, ver2 = edge
