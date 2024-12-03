@@ -11,6 +11,7 @@ def read_file(file_name: str, extra_list = False) -> list[tuple] | list[set]:
     """
     The function reads the file .dot and makes 
     the list of tuples of neighbour vertices.
+    We don't consider one vertice as a graph.
 
     :param file_name: str, the name of the file.
     :return: list[tuple] | list[set], the list for graph.
