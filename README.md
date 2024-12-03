@@ -130,7 +130,7 @@ python3 result.py example.dot hamiltonian-visualization
 ```
 - для розфарбовування зв'язних графів у 3 кольори
 ```
-python3 result.py example.dot coloring-graphs --file-out example_out.dot --colors red,yellow,blue
+python3 result.py example.dot coloring-graphs --file-out example_out.dot --colors red,yellow,blue --visualization-for-coloring True # False для запису без візуалізації
 ```
 - для перевірки на двочастковість графа
 ```
