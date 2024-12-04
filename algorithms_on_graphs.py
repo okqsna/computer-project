@@ -96,6 +96,14 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
     >>> euler_cycle(graph3)
     [['a', 'b', 'c', 'd']]
 
+    >>> graph3 = [{2, 1}, {1, 3}, {3, 4}, {4, 2}]
+    >>> euler_cycle(graph3)
+    [[1, 2, 4, 3]]
+
+    >>> graph3 = [(1, 2), (2, 3), (3, 4), (4, 1)]
+    >>> euler_cycle(graph3)
+    [[1, 2, 3, 4]]
+
     >>> graph4 = [{'a', 'b'}, {'b', 'c'}, {'c', 'd'}, {'d', 'a'}, {'a', 'e'}, {'b', 'e'}, \
 {'c', 'e'}, {'d', 'e'}, {'f', 'd'}, {'f', 'c'}, {'g', 'a'}, {'g', 'b'}]
     >>> ['a', 'e', 'd', 'f', 'c', 'e', 'b', 'c', 'd', 'a', 'b', 'g'] in euler_cycle(graph4)
@@ -103,7 +111,6 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
     """
     if not graph:
         return "This graph is empty"
-    # deepcopy to be on the safe side
     p_graph = graph.copy()
     length = len(graph)
 
@@ -122,7 +129,6 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
         Takes a graph and current position. Check where you can go from your current position
         and creates all these possible ways.
         """
-        graph = graph.copy()
         graph.remove(r_p)
         if flag:
             graph.remove(r_p[::-1])
@@ -130,18 +136,18 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
             if pair[0] == position:
                 if pair[1] == vertex and len(way) == length:
                     all_cycles.append(way)
-                calculate_way(graph, pair[1], way+pair[1], pair)
+                calculate_way(graph.copy(), pair[1], way+[pair[1]], pair)
 
     # This is a vertix from which we move
     vertex = min(p_graph[0])
-    calculate_way(p_graph + ['*', '*'], vertex, vertex, '*')
+    calculate_way(p_graph + ['*', '*'], vertex, [vertex], '*')
 
     output = []
     for cycle in all_cycles:
-        if 'a' + cycle[1:][::-1] not in output and cycle not in output:
+        if [vertex] + cycle[1:][::-1] not in output and cycle not in output:
             output.append(cycle)
 
-    return [list(el) for el in sorted(output)] if output else 'There is no Euler cycle for this graph'
+    return sorted(output) if output else 'There is no Euler cycle for this graph'
 
 
 def permute(nodes):
