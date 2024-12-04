@@ -7,6 +7,7 @@ import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 import ast
 
+
 def read_file(file_name: str, extra_list = False) -> list[tuple] | list[set]:
     """
     The function reads the file .dot and makes 
@@ -68,7 +69,6 @@ sorted([('b', 'a'), ('a', 'b'), ('b', 'c'), ('c', 'b'), ('d', 'c'), ('c', 'd'), 
         output.extend([(ver1, ver2), (ver2, ver1)])
 
     return output
-
 
 def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
     """
@@ -148,7 +148,6 @@ def euler_cycle(graph: list[tuple | set]) -> list[list[str]]:
             output.append(cycle)
 
     return sorted(output) if output else 'There is no Euler cycle for this graph'
-
 
 def permute(nodes):
     """
@@ -626,7 +625,117 @@ def bipartite_graph_check(graph: list[tuple] | list[set])-> bool:
 
     return True
 
+def if_graphs_are_isomorphic(graph_1: list[tuple], graph_2: list[tuple]) -> bool:
+    """
+    Checks if two graphs are isomorphic
 
+    :param graph_1: a list of edges for the first graph.
+    :param graph_2: a list of edges for the second graph.
+    :return: bool, True if the graphs are isomorphic, False if not.
+
+    >>> if_graphs_are_isomorphic([(1, 2), (2, 1), (3, 4)], [(2, 1), (1, 2), (4, 3)])
+    True
+    >>> if_graphs_are_isomorphic([(1, 2), (2, 3)], [(3, 2), (2, 1)])
+    True
+    >>> if_graphs_are_isomorphic([{1, 2}, {2, 3}, {3, 4}], [{3, 4}, {1, 2}, {2, 3}])
+    True
+    """
+
+    def directed_isomorphism(graph_1: list[tuple], graph_2: list[tuple]) -> bool:
+        """Checks if directed graphs are isomorphic
+    
+        :param graph_1: a list of directed edges for the first graph.
+        :param graph_2: a list of directed edges for the second graph.
+        :return: bool, True if the graphs are isomorphic, False if not.
+    
+         >>> directed_isomorphism([(1, 2), (2, 3), (3, 1)], [(3, 2), (2, 1), (1, 3)])
+        True
+        >>> directed_isomorphism([(1, 2), (2, 3), (3, 4)], [(4, 3), (3, 2), (2, 1)])
+        False
+        """
+        if len(graph_1) != len(graph_2):
+            return False
+
+        # collect vertices for both graphs
+        vertices_1 = set()
+        vertices_2 = set()
+
+        for graph in graph_1:
+            vertices_1.add(graph[0])
+            vertices_1.add(graph[1])
+        for graph in graph_2:
+            vertices_2.add(graph[0])
+            vertices_2.add(graph[1])
+
+        if len(vertices_1) != len(vertices_2):
+            return False
+
+        # try all permutations of vertices to find a matching mapping
+        for perm in permute(list(vertices_2)):
+            vertex_match = {}
+            for u, v in enumerate(vertices_1):
+                vertex_match[v] = perm[u]
+
+            # create a new graph based on the permutation of vertex labels
+            new_graph = []
+            for start, end in graph_1:
+                new_graph.append((vertex_match[start], vertex_match[end]))
+
+            # check if the rearranged graph matches the second graph
+            if sorted(new_graph) == sorted(graph_2):
+                return True
+
+        return False
+
+
+    def undirected_isomorphism(graph_1: list[set], graph_2: list[set]) -> bool:
+        """
+        Checks if undirected graphs are isomorphic
+
+        :param graph_1: a list of undirected edges for the first graph.
+        :param graph_2: a list of undirected edges for the second graph.
+        :return: bool, True if the graphs are isomorphic, False if not.
+
+        >>> undirected_isomorphism([{1, 2}, {2, 3}, {3, 4}], [{4, 3}, {2, 1}, {3, 2}])
+        True
+        >>> undirected_isomorphism([{1, 2}, {3, 4}], [{1, 2}, {3, 5}])
+        False
+        """
+        if len(graph_1) != len(graph_2):
+            return False
+        
+        # convert the edges to sorted tuples for easier comparison
+        graph_1 = [tuple(edge) for edge in graph_1]
+        graph_2 = [tuple(edge) for edge in graph_2]
+
+        # collect vertices for both graphs
+        vertices_1 = set()
+        vertices_2 = set()
+
+        for graph in graph_1:
+            vertices_1.add(graph[0])
+            vertices_1.add(graph[1])
+        for graph in graph_2:
+            vertices_2.add(graph[0])
+            vertices_2.add(graph[1])
+
+        # if the sets of vertices match, graphs could be isomorphic
+        if vertices_1 == vertices_2:
+            return True
+
+        return False
+
+     # check whether the input graphs are directed or undirected
+    if isinstance(graph_1[0], tuple) == isinstance(graph_2[0], tuple):
+        if isinstance(graph_1[0], tuple) is True:
+                # if both graphs are directed, check for directed isomorphism
+                return directed_isomorphism(graph_1, graph_2)
+        else:
+            # if both graphs are undirected, check for undirected isomorphism
+            return undirected_isomorphism(graph_1, graph_2)
+    else:
+         # if one graph is directed and the other is undirected, they cannot be isomorphic
+        return False
 
 
 if __name__ == "__main__":
